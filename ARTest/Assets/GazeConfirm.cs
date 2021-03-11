@@ -29,7 +29,7 @@ public class GazeConfirm : MonoBehaviour
             }
             if (timer.ElapsedMilliseconds > 2000 && !inputDown)
             {
-                //interactable.SetInputDown();
+                interactable.SetInputDown();
                 inputDown = true;              
             }  
            
@@ -39,6 +39,7 @@ public class GazeConfirm : MonoBehaviour
         {
             timerStarted = false;
             inputDown = false;
+            timer.Reset();
         }
     }
 }

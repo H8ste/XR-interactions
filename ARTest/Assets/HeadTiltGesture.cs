@@ -191,7 +191,8 @@ public class HeadTiltGesture : MonoBehaviour
         {
             // did confirm gesture
             Debug.Log("confirmed");
-            
+            audioSource.clip = confirmClip;
+            audioSource.Play();
         }
         doingCancelGesture = false;
         doingConfirmGesture = true;
@@ -205,6 +206,8 @@ public class HeadTiltGesture : MonoBehaviour
         {
             // did cancel gesture
             Debug.Log("cancelled");
+            audioSource.clip = cancelClip;
+            audioSource.Play();
         }
         doingCancelGesture = true;
         doingConfirmGesture = false;

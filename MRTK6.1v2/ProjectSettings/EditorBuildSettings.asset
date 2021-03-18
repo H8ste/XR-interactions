@@ -48,9 +48,12 @@ EditorBuildSettings:
     path: Assets/Scenes/#19_PinchGestureToSelectItemFromList.unity
     guid: 5c5a03b184d97d14a8f63f423920eb87
   - enabled: 1
+    path: Assets/Scenes/#16_SwipeGesture.unity
+    guid: e52d8e773dd3a4a4cbaddde9242e1635
+  - enabled: 1
     path: Assets/MRTK/Services/SceneSystem/SceneSystemResources/DefaultLightingScene.unity
     guid: 7e54e36c44f826c438c95da79f8de638
   - enabled: 1
-    path: Assets/Scenes/#16_SwipeGesture.unity
-    guid: e52d8e773dd3a4a4cbaddde9242e1635
+    path: Assets/Scenes/#21_FramingScene.unity
+    guid: 16e1cc32cddbc004dbd567499a1a4bd0
   m_configObjects: {}

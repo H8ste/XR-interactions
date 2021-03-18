@@ -8,6 +8,9 @@ public class GazeConfirm : MonoBehaviour
     Interactable interactable;
     bool timerStarted = false;
     bool inputDown = false;
+
+    [SerializeField]
+    float inputTime = 2000f;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,7 +34,7 @@ public class GazeConfirm : MonoBehaviour
 
         if (hasFocus && !triggered)
         {
-            if (timer.ElapsedMilliseconds > 2000)
+            if (timer.ElapsedMilliseconds > inputTime)
             {
                 triggered = true;
                 interactable.SetInputDown();

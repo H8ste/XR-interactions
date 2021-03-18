@@ -27,7 +27,7 @@ MonoBehaviour:
   - Name: DefaultLightingScene
     Path: Assets/MRTK/Services/SceneSystem/SceneSystemResources/DefaultLightingScene.unity
     Included: 1
-    BuildIndex: 14
+    BuildIndex: 15
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 7e54e36c44f826c438c95da79f8de638, type: 3}
   contentScenes:
@@ -100,9 +100,15 @@ MonoBehaviour:
   - Name: '#16_SwipeGesture'
     Path: Assets/Scenes/#16_SwipeGesture.unity
     Included: 1
-    BuildIndex: 15
+    BuildIndex: 14
     Tag: Untagged
     Asset: {fileID: 102900000, guid: e52d8e773dd3a4a4cbaddde9242e1635, type: 3}
+  - Name: '#21_FramingScene'
+    Path: Assets/Scenes/#21_FramingScene.unity
+    Included: 1
+    BuildIndex: 16
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 16e1cc32cddbc004dbd567499a1a4bd0, type: 3}
   permittedLightingSceneComponentTypes:
   - reference: UnityEngine.Transform, UnityEngine.CoreModule
   - reference: UnityEngine.GameObject, UnityEngine.CoreModule

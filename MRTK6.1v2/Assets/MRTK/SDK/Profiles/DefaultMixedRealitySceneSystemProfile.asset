@@ -1,0 +1,161 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b81dae1d46879b444aa9847f7961649f, type: 3}
+  m_Name: DefaultMixedRealitySceneSystemProfile
+  m_EditorClassIdentifier: 
+  isCustomProfile: 0
+  useManagerScene: 1
+  managerScene:
+    Name: ManagerScene
+    Path: Assets/Scenes/ManagerScene.unity
+    Included: 1
+    BuildIndex: 0
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 96c54956c1e510745bf18afe427b460f, type: 3}
+  useLightingScene: 1
+  defaultLightingSceneIndex: 0
+  lightingScenes:
+  - Name: DefaultLightingScene
+    Path: Assets/MRTK/Services/SceneSystem/SceneSystemResources/DefaultLightingScene.unity
+    Included: 1
+    BuildIndex: 15
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 7e54e36c44f826c438c95da79f8de638, type: 3}
+  contentScenes:
+  - Name: '#2_Time-basedGazeInput'
+    Path: Assets/Scenes/#2_Time-basedGazeInput.unity
+    Included: 1
+    BuildIndex: 2
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: d13aeb7b2047320408787cbeace1745e, type: 3}
+  - Name: '#3_Head-tiltInput'
+    Path: Assets/Scenes/#3_Head-tiltInput.unity
+    Included: 1
+    BuildIndex: 4
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: a63383a00fbe1b047ac9e2e5295b12b0, type: 3}
+  - Name: '#4_HandInBoxInput'
+    Path: Assets/Scenes/#4_HandInBoxInput.unity
+    Included: 1
+    BuildIndex: 5
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 715093ed1dcc39a4d9908377c93e06dc, type: 3}
+  - Name: '#7_VoiceCommandsAsInput'
+    Path: Assets/Scenes/#7_VoiceCommandsAsInput.unity
+    Included: 1
+    BuildIndex: 6
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: e174be8cb1a38d24c9adaedbfbb3c25b, type: 3}
+  - Name: '#11_Top-downView+Front-viewOfRack'
+    Path: Assets/Scenes/#11_Top-downView+Front-viewOfRack.unity
+    Included: 1
+    BuildIndex: 7
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 92bd1994864022745b3b0c0ed2e6fc82, type: 3}
+  - Name: '#12_CurrentSystemApproachPortedOver'
+    Path: Assets/Scenes/#12_CurrentSystemApproachPortedOver.unity
+    Included: 1
+    BuildIndex: 8
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 4ea7691e8979c6f4597d087b29148a64, type: 3}
+  - Name: '#14_ScanWithTextFeedback'
+    Path: Assets/Scenes/#14_ScanWithTextFeedback.unity
+    Included: 1
+    BuildIndex: 10
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 0f817d7866475e24aaf59be1a153b5fa, type: 3}
+  - Name: '#14.1_ScanOnlyVisualFeedback'
+    Path: Assets/Scenes/#14.1_ScanOnlyVisualFeedback.unity
+    Included: 1
+    BuildIndex: 9
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 29b6ef3a090520142b174033aa265058, type: 3}
+  - Name: '#15_SoundFeedbackOnScan'
+    Path: Assets/Scenes/#15_SoundFeedbackOnScan.unity
+    Included: 1
+    BuildIndex: 11
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 113a5c0468daae24fbaec16ff9474289, type: 3}
+  - Name: '#18_GazeGestureToSelectItemFromList'
+    Path: Assets/Scenes/#18_GazeGestureToSelectItemFromList.unity
+    Included: 1
+    BuildIndex: 12
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: b4147922623e24f409f4f91bedefd40c, type: 3}
+  - Name: '#19_PinchGestureToSelectItemFromList'
+    Path: Assets/Scenes/#19_PinchGestureToSelectItemFromList.unity
+    Included: 1
+    BuildIndex: 13
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 5c5a03b184d97d14a8f63f423920eb87, type: 3}
+  - Name: '#16_SwipeGesture'
+    Path: Assets/Scenes/#16_SwipeGesture.unity
+    Included: 1
+    BuildIndex: 14
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: e52d8e773dd3a4a4cbaddde9242e1635, type: 3}
+  - Name: '#21_FramingScene'
+    Path: Assets/Scenes/#21_FramingScene.unity
+    Included: 1
+    BuildIndex: 16
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 16e1cc32cddbc004dbd567499a1a4bd0, type: 3}
+  permittedLightingSceneComponentTypes:
+  - reference: UnityEngine.Transform, UnityEngine.CoreModule
+  - reference: UnityEngine.GameObject, UnityEngine.CoreModule
+  - reference: UnityEngine.Light, UnityEngine.CoreModule
+  - reference: UnityEngine.ReflectionProbe, UnityEngine.CoreModule
+  - reference: UnityEngine.LightProbeGroup, UnityEngine.CoreModule
+  - reference: UnityEngine.LightProbeProxyVolume, UnityEngine.CoreModule
+  contentTags: []
+  cachedLightingSettings:
+  - SceneName: DefaultLightingScene
+    RenderSettings:
+      Fog: 0
+      FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+      FogMode: 2
+      FogDensity: 0.01
+      LinearFogStart: 0
+      LinearFogEnd: 300
+      AmbientSkyColor: {r: 0.08962262, g: 0.3930819, b: 1, a: 1}
+      AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
+      AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+      AmbientLight: {r: 0, g: 0, b: 0, a: 0}
+      AmbientIntensity: 1
+      AmbientMode: 1
+      SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
+      SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+      DefaultReflectionMode: 0
+      DefaultReflectionResolution: 128
+      ReflectionBounces: 1
+      ReflectionIntensity: 1
+      CustomReflection: {fileID: 0}
+      UseRadianceAmbientProbe: 0
+    LightingSettings:
+      BounceScale: 1
+      IndirectOutputScale: 1
+      AlbedoBoost: 1
+      EnvironmentLightingMode: 0
+      EnableBakedLightmaps: 0
+      EnabledRealtimeLightmaps: 0
+    SunlightSettings:
+      UseSunlight: 1
+      Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+      Intensity: 1
+      XRotation: 50
+      YRotation: 330
+      ZRotation: 0
+  editorManageBuildSettings: 1
+  editorEnforceSceneOrder: 1
+  editorManageLoadedScenes: 1
+  editorEnforceLightingSceneTypes: 1
+  editorLightingCacheOutOfDate: 1

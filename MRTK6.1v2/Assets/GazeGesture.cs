@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.MixedReality.Toolkit;
+using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.UI;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GazeGesture : MonoBehaviour
+public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
 {
     [SerializeField]
     private List<string> itemsToSelectFrom;
@@ -46,6 +49,7 @@ public class GazeGesture : MonoBehaviour
     private List<GameObject> spawnedDisplays = new List<GameObject>();
 
     private bool hasHitDisplay = false;
+    private Interactable hitDisplay;
 
     [SerializeField]
     private string selectionTag;
@@ -231,10 +235,7 @@ public class GazeGesture : MonoBehaviour
 
     private void FixedUpdate()
     {
-
-        //shoot ray
-
-        // Bit shift the index of the layer (8) to get a bit mask
+        // Bit shift the index of the layer (10) to get a bit mask
         // This will cast rays only against colliders in layer 10.
         int layerMask = 1 << 10;
 
@@ -249,7 +250,7 @@ public class GazeGesture : MonoBehaviour
                 break;
 
             case false:
-                directionVector.x = 0;
+                //directionVector.x = 0;
                 break;
         }
 
@@ -263,6 +264,8 @@ public class GazeGesture : MonoBehaviour
             }
             else
             {
+                Debug.DrawRay(Camera.main.transform.position, directionVector * 1000, Color.green);
+
 
                 var selectionPositionGameObject = FindChildWithTag(selectionTag, hit.transform);
 
@@ -282,6 +285,7 @@ public class GazeGesture : MonoBehaviour
                         }
 
                         spawnedSelection = Instantiate(selectionPrefab, selectionPositionGameObject.transform, false);
+                        hitDisplay = selectionPositionGameObject.GetComponent<Interactable>();
 
                         Debug.Log(hit.transform.GetComponent<TextMeshPro>().text);
 
@@ -294,7 +298,6 @@ public class GazeGesture : MonoBehaviour
         }
         else
         {
-            //Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
             Debug.Log("Did not Hit");
         }
     }
@@ -326,4 +329,34 @@ public class GazeGesture : MonoBehaviour
         return (mappedValue);
     }
 
+    
+    private void OnEnable()
+    {
+        CoreServices.InputSystem?.PushFallbackInputHandler(gameObject);
+    }
+
+    private void OnDisable()
+    {
+        
+        CoreServices.InputSystem?.PopFallbackInputHandler();
+    }
+
+    void IMixedRealityInputActionHandler.OnActionStarted(BaseInputEventData eventData)
+    {
+        return;
+    }
+
+    // is triggered if all other gameobjects in scene did not respond to a Action - works as a fallback
+    // only way we can register actions on gameobjects like these, where focus shouldn't be 
+    void IMixedRealityInputActionHandler.OnActionEnded(BaseInputEventData eventData)
+    {
+        if (hitDisplay)
+        {
+            // a display has been hit (selected)
+            hitDisplay.SetInputDown();
+        } else
+        {
+            Debug.Log("hit display not been set");
+        }
+    }
 }

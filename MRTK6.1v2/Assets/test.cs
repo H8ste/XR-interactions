@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class test : MonoBehaviour
 {
@@ -20,5 +22,10 @@ public class test : MonoBehaviour
     {
         Debug.Log("printing");
 
+    }
+
+    public void PrintWithString(TextMeshPro param)
+    {
+        Debug.Log("Printing: " + param.text.ToString());
     }
 }

@@ -4,32 +4,46 @@ using UnityEngine;
 
 public class ChangeMenuLayout : MonoBehaviour
 {
-    public GameObject menu1;
-    public GameObject menu2;
+    [SerializeField]
+    private GameObject menu1;
+    [SerializeField]
+    private GameObject menu2;
+    [SerializeField]
+    MenuRaycaster menuRaycasterHandler;
 
-    bool menu1Active = true;
-    bool menu2Active = false;
+    bool isMenuOne = true;
 
-    void Start()
-    {
-        menu2.SetActive(false);
-    }
+    /* Public Methods */
 
-
+    /// <summary>
+    /// Triggers a switch of menus (scrollHandler)
+    /// </summary>
     public void SwitchMenu()
     {
-        if (menu1Active && !menu2Active)
+        if (isMenuOne)
         {
             menu1.SetActive(false);
-            menu1Active = false;
             menu2.SetActive(true);
-            menu2Active = true;
-        }else if(menu2Active && !menu1Active)
+        } else {
+            menu1.SetActive(true);
+            menu2.SetActive(false);
+        }
+
+        isMenuOne = !isMenuOne;
+
+        menuRaycasterHandler.SetupScrollHandler(isMenuOne ? menu1 : menu2);
+    }
+
+    /* Private Methods */
+    void Start()
+    {
+        if (isMenuOne)
         {
             menu2.SetActive(false);
-            menu2Active = false;
             menu1.SetActive(true);
-            menu1Active = true;
+        } else {
+            menu1.SetActive(false);
+            menu2.SetActive(true);
         }
     }
 }

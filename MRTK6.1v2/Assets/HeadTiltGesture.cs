@@ -1,49 +1,58 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.Events;
 
 public class HeadTiltGesture : MonoBehaviour
 {
-
-    private Camera cameraRef;
-
-    private Quaternion FixedRotation { get { return Quaternion.Euler(new Vector3(0, cameraRef.transform.rotation.eulerAngles.y, cameraRef.transform.rotation.eulerAngles.z)); } }
-    private Vector3 FixedPosition { get { return cameraRef.transform.position; } }
+    //private Camera cameraRef;
+    private Quaternion FixedRotation { get { return Quaternion.Euler(new Vector3(0, Camera.main.transform.rotation.eulerAngles.y, Camera.main.transform.rotation.eulerAngles.z)); } }
+    private Vector3 FixedPosition { get { return Camera.main.transform.position; } }
 
 
-    private bool gestureListener;
+
 
     [SerializeField]
     private GameObject ColliderGO;
     [SerializeField]
     private GameObject RotateGO;
-    private Quaternion lockedRotation;
 
-
-    private bool doingConfirmGesture = false;
-    private bool doingCancelGesture = false;
-    private int lastCollisionID = -1;
-
-    private bool hovering = false;
+    [SerializeField]
+    UnityEvent OnHeadTilt;
 
     [SerializeField]
     private AudioClip confirmClip;
-
     [SerializeField]
     private AudioClip cancelClip;
 
+
     private AudioSource audioSource;
+
+    private Quaternion lockedRotation;
+
+    private bool gestureListener;
+    private bool doingConfirmGesture = false;
+    private bool doingCancelGesture = false;
+    private int lastCollisionID = -1;
+    private bool hovering = false;
+
+
+
+
+
 
 
     // Start is called before the first frame update
     void Start()
     {
-        cameraRef = Camera.main;
+        //cameraRef = Camera.main;
         audioSource = GetComponent<AudioSource>();
 
 
         if (!ColliderGO && !RotateGO && !confirmClip && !cancelClip)
         {
             Debug.LogError("All references have not been set on this script");
-        } else
+        }
+        else
         {
             ColliderGO.SetActive(false);
         }
@@ -61,9 +70,9 @@ public class HeadTiltGesture : MonoBehaviour
         else
         {
             transform.SetPositionAndRotation(FixedPosition, lockedRotation);
-            RotateGO.transform.SetPositionAndRotation(FixedPosition, cameraRef.transform.rotation);
+            RotateGO.transform.SetPositionAndRotation(FixedPosition, Camera.main.transform.rotation);
 
-   
+
         }
     }
 
@@ -106,7 +115,7 @@ public class HeadTiltGesture : MonoBehaviour
         }
     }
 
-    
+
 
 
     public void ActiveGestureListener()
@@ -167,17 +176,19 @@ public class HeadTiltGesture : MonoBehaviour
             case 0:
             case 2:
                 RegisterConfirmInput(colliderID == lastCollisionID);
+
                 break;
             case 1:
             case 3:
                 RegisterCancelInput(colliderID == lastCollisionID);
+
                 break;
-            //case 2:
-            //    RegisterConfirmInput(colliderID == lastCollisionID);
-            //    break;
-            //case 3:
-            //    RegisterCancelInput(colliderID == lastCollisionID);
-            //    break;
+                //case 2:
+                //    RegisterConfirmInput(colliderID == lastCollisionID);
+                //    break;
+                //case 3:
+                //    RegisterCancelInput(colliderID == lastCollisionID);
+                //    break;
         }
 
         lastCollisionID = colliderID;
@@ -193,6 +204,7 @@ public class HeadTiltGesture : MonoBehaviour
             Debug.Log("confirmed");
             audioSource.clip = confirmClip;
             audioSource.Play();
+            InvokeGesture();
         }
         doingCancelGesture = false;
         doingConfirmGesture = true;
@@ -208,8 +220,37 @@ public class HeadTiltGesture : MonoBehaviour
             Debug.Log("cancelled");
             audioSource.clip = cancelClip;
             audioSource.Play();
+            InvokeGesture();
         }
         doingCancelGesture = true;
         doingConfirmGesture = false;
+    }
+
+    public IEnumerator OnAudioStopped()
+    {
+        float clipLength = audioSource.clip.length;
+        yield return new WaitForSeconds(clipLength);
+
+        doingCancelGesture = false;
+        doingCancelGesture = false;
+        gestureListener = false;
+        hovering = false;
+        lastCollisionID = -1;
+        //EndGesture();
+    }
+
+
+    public void EndGesture()
+    {
+        StartCoroutine(OnAudioStopped());
+    }
+
+
+    private void InvokeGesture()
+    {
+        if (OnHeadTilt != null)
+        {
+            OnHeadTilt.Invoke();
+        }
     }
 }

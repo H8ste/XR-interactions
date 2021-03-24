@@ -26,17 +26,43 @@ MonoBehaviour:
   lightingScenes:
   - Name: LightingScene
     Path: Assets/Scenes/LightingScene.unity
-    Included: 1
-    BuildIndex: 3
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: d7c45e71bba16fb4882b8468d9824716, type: 3}
   contentScenes:
-  - Name: '#2_Time-basedGazeInput'
-    Path: Assets/Scenes/#2_Time-basedGazeInput.unity
+  - Name: Scrolling=Head;Selection=Clicker
+    Path: Assets/Scenes/Scrolling=Head;Selection=Clicker.unity
     Included: 1
-    BuildIndex: 2
+    BuildIndex: 1
     Tag: Untagged
-    Asset: {fileID: 102900000, guid: d13aeb7b2047320408787cbeace1745e, type: 3}
+    Asset: {fileID: 102900000, guid: 9ed5dffab5b7dec4f8022e34bec7de56, type: 3}
+  - Name: Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker (Horizontal)
+    Path: Assets/Scenes/Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker
+      (Horizontal).unity
+    Included: 1
+    BuildIndex: 5
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: b64707e49eb592346864b3fa9d5f2fd3, type: 3}
+  - Name: Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker (Vertical)
+    Path: Assets/Scenes/Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker
+      (Vertical).unity
+    Included: 1
+    BuildIndex: 6
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: c37b04ee060f0fa4abdc075f99b06e81, type: 3}
+  - Name: Prompt=HeadTilt
+    Path: Assets/Scenes/Prompt=HeadTilt.unity
+    Included: 1
+    BuildIndex: 7
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: 81f2aef23782e1c4da7fcd15e3217418, type: 3}
+  - Name: Prompt=ClickerTap
+    Path: Assets/Scenes/Prompt=ClickerTap.unity
+    Included: 1
+    BuildIndex: 8
+    Tag: Untagged
+    Asset: {fileID: 102900000, guid: a967c5c0934c5ea4f95e8f562453d5fe, type: 3}
   permittedLightingSceneComponentTypes:
   - reference: UnityEngine.Transform, UnityEngine.CoreModule
   - reference: UnityEngine.GameObject, UnityEngine.CoreModule
@@ -86,4 +112,4 @@ MonoBehaviour:
   editorEnforceSceneOrder: 1
   editorManageLoadedScenes: 1
   editorEnforceLightingSceneTypes: 1
-  editorLightingCacheOutOfDate: 0
+  editorLightingCacheOutOfDate: 1

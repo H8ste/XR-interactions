@@ -7,6 +7,19 @@ public class SceneLoading : MonoBehaviour
     [SerializeField]
     private SceneTracker sceneTracker;
 
+    private async void Start()
+    {
+        IMixedRealitySceneSystem sceneSystem = MixedRealityToolkit.Instance.GetService<IMixedRealitySceneSystem>();
+
+        if (sceneTracker != null)
+        {
+            
+
+            await sceneSystem.LoadContent(sceneSystem.ContentSceneNames[0]);
+            sceneTracker.UpdateSceneTrackingText();
+        }
+    }
+
     public async void LoadScene(bool loadingNext)
     {
         IMixedRealitySceneSystem sceneSystem = MixedRealityToolkit.Instance.GetService<IMixedRealitySceneSystem>();

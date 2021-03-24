@@ -60,7 +60,7 @@ public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
 
 
 
-        var cameraRotFixed = Quaternion.Euler(new Vector3(0, (Camera.main.transform.rotation).eulerAngles.y, Camera.main.transform.rotation.eulerAngles.z));
+        var cameraRotFixed = Quaternion.Euler(new Vector3(0, (Camera.main.transform.rotation).eulerAngles.y, 0));
         transform.SetPositionAndRotation(Camera.main.transform.position, cameraRotFixed);
 
         if (!displayPrefab || itemsToSelectFrom == null)
@@ -145,7 +145,7 @@ public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
                     -beginSegment * percentile;
 
 
-            cameraRotFixed = Quaternion.Euler(new Vector3(0, rotation, Camera.main.transform.rotation.eulerAngles.z));
+            cameraRotFixed = Quaternion.Euler(new Vector3(0, rotation, 0));
 
         }
         else
@@ -160,7 +160,7 @@ public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
                     -endSegment * percentile :
                     -beginSegment * percentile;
 
-            cameraRotFixed = Quaternion.Euler(new Vector3(rotation, (Camera.main.transform.rotation).eulerAngles.y, Camera.main.transform.rotation.eulerAngles.z));
+            cameraRotFixed = Quaternion.Euler(new Vector3(rotation, (Camera.main.transform.rotation).eulerAngles.y, 0));
 
         }
 
@@ -290,6 +290,16 @@ public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
                         Debug.Log(hit.transform.GetComponent<TextMeshPro>().text);
 
                         hasHitDisplay = true;
+                        hitDisplay.HasFocus = true;
+
+
+                        foreach (var display in gameObject.GetComponentsInChildren<Interactable>())
+                        {
+                            if (display != hitDisplay)
+                            {
+                                display.HasFocus = false;
+                            }
+                        }
                     }
 
 
@@ -327,6 +337,11 @@ public class GazeGesture : MonoBehaviour, IMixedRealityInputActionHandler
         float mappedValue = (((valueToMap - OldMin) * NewRange) / OldRange) + NewMin;
 
         return (mappedValue);
+    }
+
+    public void SwitchOrientation()
+    {
+        isHorizontal = !isHorizontal;
     }
 
     

@@ -17,6 +17,12 @@ public class HeadTiltGesture : MonoBehaviour
     private GameObject RotateGO;
 
     [SerializeField]
+    private GameObject ButtonGO;
+
+    [SerializeField]
+    private GameObject FeedForwardGO;
+
+    [SerializeField]
     UnityEvent OnHeadTilt;
 
     [SerializeField]
@@ -55,6 +61,7 @@ public class HeadTiltGesture : MonoBehaviour
         else
         {
             ColliderGO.SetActive(false);
+            FeedForwardGO.SetActive(false);
         }
 
 
@@ -71,8 +78,6 @@ public class HeadTiltGesture : MonoBehaviour
         {
             transform.SetPositionAndRotation(FixedPosition, lockedRotation);
             RotateGO.transform.SetPositionAndRotation(FixedPosition, Camera.main.transform.rotation);
-
-
         }
     }
 
@@ -104,14 +109,10 @@ public class HeadTiltGesture : MonoBehaviour
             }
 
             hovering = true;
-            //Debug.DrawRay(RotateGO.transform.position, RotateGO.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-            //Debug.Log("Did Hit");
         }
         else
         {
             hovering = false;
-            //Debug.DrawRay(RotateGO.transform.position, RotateGO.transform.TransformDirection(Vector3.forward) * 1000, Color.white);
-            //Debug.Log("Did not Hit");
         }
     }
 
@@ -126,6 +127,7 @@ public class HeadTiltGesture : MonoBehaviour
 
         lockedRotation = gameObject.transform.rotation;
         ColliderGO.SetActive(true);
+        FeedForwardGO.SetActive(true);
     }
 
     private int GetCollideID(BoxCollider boxCollider)
@@ -176,19 +178,11 @@ public class HeadTiltGesture : MonoBehaviour
             case 0:
             case 2:
                 RegisterConfirmInput(colliderID == lastCollisionID);
-
                 break;
             case 1:
             case 3:
                 RegisterCancelInput(colliderID == lastCollisionID);
-
                 break;
-                //case 2:
-                //    RegisterConfirmInput(colliderID == lastCollisionID);
-                //    break;
-                //case 3:
-                //    RegisterCancelInput(colliderID == lastCollisionID);
-                //    break;
         }
 
         lastCollisionID = colliderID;
@@ -198,16 +192,27 @@ public class HeadTiltGesture : MonoBehaviour
     {
         if (falseInput) return;
 
-        if (doingConfirmGesture)
-        {
-            // did confirm gesture
-            Debug.Log("confirmed");
-            audioSource.clip = confirmClip;
-            audioSource.Play();
-            InvokeGesture();
-        }
+        //if (doingConfirmGesture)
+        //{
+        //    Debug.Log("confirmed");
+        //    audioSource.clip = confirmClip;
+        //    audioSource.Play();
+        //    InvokeGesture();
+        //} else
+        //{
+        //    doingCancelGesture = false;
+        //    doingConfirmGesture = true;
+        //}
+
+        Debug.Log("confirmed");
+        audioSource.clip = confirmClip;
+        audioSource.Play();
+        InvokeGesture();
+
         doingCancelGesture = false;
         doingConfirmGesture = true;
+
+        Debug.Log("Registered Confirm Input");
     }
 
     public void RegisterCancelInput(bool falseInput)
@@ -221,22 +226,41 @@ public class HeadTiltGesture : MonoBehaviour
             audioSource.clip = cancelClip;
             audioSource.Play();
             InvokeGesture();
+        } else
+        {
+            doingCancelGesture = true;
+            doingConfirmGesture = false;
         }
-        doingCancelGesture = true;
-        doingConfirmGesture = false;
+
+        Debug.Log("Registered Cancel Input");
     }
 
     public IEnumerator OnAudioStopped()
     {
         float clipLength = audioSource.clip.length;
-        yield return new WaitForSeconds(clipLength);
 
         doingCancelGesture = false;
-        doingCancelGesture = false;
+        doingConfirmGesture = false;
         gestureListener = false;
         hovering = false;
+        ColliderGO.SetActive(false);
+        FeedForwardGO.SetActive(false);
+
+
+        yield return new WaitForSeconds(clipLength);
+
+
+
+        //buttonActive = true
+        ButtonGO.SetActive(true);
+ 
+
+        //collidersActive = false
+
+
         lastCollisionID = -1;
-        //EndGesture();
+
+        //print("")
     }
 
 

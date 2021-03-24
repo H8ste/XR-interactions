@@ -855,7 +855,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   confirmClip: {fileID: 8300000, guid: 9c496bada7bf21e4eb17d275b19f4b25, type: 3}
   cancelClip: {fileID: 8300000, guid: 2826b03ccaa826a42af0e68bfd49d948, type: 3}
-  clickTime: 0.2
+  clickTime: 0.4
   button: {fileID: 1393047254}
   canvas: {fileID: 456153893}
 --- !u!82 &826197257

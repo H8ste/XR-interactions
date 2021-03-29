@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-interface IScrollableItem
+public interface IScrollableItem
 {
-    GameObject ItemPrefab {get;set;}  
-    OnClick OnClick {get;set;} 
+    GameObject ItemPrefab { get; set; }
+    OnClick OnClick { get; set; }
 
-    int ScrollableID {get;set;}
+    int ScrollableID { get; set; }
+    GameObject InstantiatedScrollableItem { get; set; }
 }

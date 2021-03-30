@@ -5,6 +5,9 @@ using UnityEngine;
 public class OrderItem: IScrollableItem
 {
     /* IScrollableItem Properties */
+    private GameObject instantiatedScrollableItem;
+    public GameObject InstantiatedScrollableItem { get { return instantiatedScrollableItem; } set { instantiatedScrollableItem = value; } }
+
     private GameObject itemPrefab;
     public GameObject ItemPrefab {get {return itemPrefab; }set {itemPrefab = value;}}  
 
@@ -12,11 +15,12 @@ public class OrderItem: IScrollableItem
     public OnClick OnClick {get {return onClick;} set {onClick = value;}} 
 
     private int scrollableID;
-    public int ScrollableID {get {return scrollableID;} set {scrollableID = value;}} 
+    public int ScrollableID {get {return scrollableID;} set {scrollableID = value;}}
 
     /* OrderItem Properties */
 
     // private LockPK locationCode
+    
     private short remainingStock;
     private short amountToTake;
     private string nameOfItem;

@@ -7,6 +7,9 @@ TagManager:
   - IndexFingerCollider
   - SwipeGesture
   - SelectionPosition
+  - Amount
+  - ItemName
+  - LocPK
   layers:
   - Default
   - TransparentFX

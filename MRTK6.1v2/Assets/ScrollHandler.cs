@@ -4,23 +4,45 @@ using Microsoft.MixedReality.Toolkit.UI;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using System.Linq;
 
 public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
 {
-    [SerializeField]
-    private List<string> itemsToSelectFrom;
+    /* ScrollHandler Properties */
+    OnClick itemSelected;
+    public UnityEvent<int> ItemSelected { get { return itemSelected; } }
 
-    [SerializeField]
-    private GameObject displayPrefab;
+    IScrollableItem[] scrollableItems;
+    public IScrollableItem[] ScrollableItems { get { return scrollableItems; } }
 
-    [SerializeField]
+    private float scrollableItemLength;
+    public float ScrollableItemLength { get { return scrollableItemLength; } set { scrollableItemLength = value; } }
+
+    private List<GameObject> spawnedScrollableItems = new List<GameObject>();
+    public List<GameObject> SpawnedScrollableItems { get { return spawnedScrollableItems; } }
+
+
+    /* SelectionPointer Properties */
+    // pointer used to give the user the feedback of which scrollable item is currently hovered/selected
+
     private GameObject selectionPrefab;
+    private GameObject SelectionPrefab { get { return selectionPrefab; } set { selectionPrefab = value; } }
 
-    private GameObject spawnedSelection;
+    private GameObject spawnedScrollablePointer;
+    private GameObject SpawnedScrollablePointer { get { return spawnedScrollablePointer; } set { spawnedScrollablePointer = value; } }
+
+    [SerializeField]
+    private string selectionTag;
 
 
-    // private float spacing;
+    /* Scrollable Items Settings */
+    [SerializeField]
+    private bool isHorizontal = true;
+    public bool IsHorizontal { get { return isHorizontal; } }
 
+    [SerializeField]
+    private float spacingPercentage = 100f;
 
     [SerializeField]
     private float radius = 2f;
@@ -28,73 +50,41 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     private float capStartDegree = 45f;
     private float capEndDegree = -45f;
 
-    // private float startDegree;
-    // private float endDegree;
-
-
-
-    //[SerializeField]
-    private bool shouldRotate = true;
-
-
-
-
-    public bool IsHorizontal { get { return isHorizontal; } }
-
-
-    private List<GameObject> spawnedDisplays = new List<GameObject>();
-
-    private bool hasHitDisplay = false;
-    private Interactable hitDisplay;
-
-    [SerializeField]
-    private string selectionTag;
-
-
-
-
-    /* UML */
-    IScrollableItem[] scrollableItems;
-    public IScrollableItem[] ScrollableItems { get { return scrollableItems; } }
-
-
-
     float spacing;
-    public float Spacing { get { return spacing; } set { spacing = value; } }
+    private float Spacing { get { return spacing; } set { spacing = value; } }
+
+    /* OnClick relevant properties */
+    private Interactable previousHitScrollableItem;
+    private Interactable PreviousHitScrollableItem { get { return previousHitScrollableItem; } set { previousHitScrollableItem = value; } }
 
     [SerializeField]
-    private bool isHorizontal = true;
+    private Transform contentTransform;
 
-    float degreeSpan;
-
-    GameObject selectionPointer;
-
-
-    private float scrollableItemLength;
-    public float ScrollableItemLength { get { return scrollableItemLength; } set { scrollableItemLength = value; } }
-
-    // public float DisplayHeight { get { return displayHeight; } }
-
-    private float displayWidth;
-    public float DisplayWidth { get { return displayWidth; } }
-
-    private List<GameObject> spawnedScrollableItems = new List<GameObject>();
-    public List<GameObject> SpawnedScrollableItems { get { return spawnedScrollableItems; } }
-
-    [SerializeField]
-    private float spacingPercentage = 100f;
-
-    // private cameraRotationFixed =
-
-    public ScrollHandler(IScrollableItem[] scrollableItems)
+    public ScrollHandler Init(IScrollableItem[] scrollableItems)
     {
-        this.scrollableItems = scrollableItems;
+        SelectionPrefab = Resources.Load("Prefabs/SelectionPointer", typeof(GameObject)) as GameObject;
+        if (!SelectionPrefab)
+        {
+            throw new System.Exception("Prefab SelectionPointer does not exist");
+        }
 
+        itemSelected = new OnClick();
+
+
+
+
+        this.scrollableItems = scrollableItems;
         Populate();
+
+        return this;
     }
 
     private void PositionCameraAndContent()
     {
+        // NOL Debug
+        // Spacing = GetSpacing(scrollableItems[0]);
+        // ScrollableItemLength = GetLength(scrollableItems[0]);
+
         var calculations = CalculateStartEndAndIncrementDegrees();
 
         PositionCamera(calculations.startDegree, calculations.endDegree);
@@ -104,16 +94,17 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     private (float startDegree, float endDegree, float degreeIncrement) CalculateStartEndAndIncrementDegrees()
     {
         var perimeter = 2 * Mathf.PI * radius;
-        var spacingInRadian = Map(0, 1, 0, 2, Spacing / perimeter);
+        var spacingInRadian = Map(0, 1, 0, 2 * Mathf.PI, Spacing / perimeter);
         var spacingInDegrees = Mathf.Rad2Deg * spacingInRadian;
-        var totalSpanDegree = ScrollableItems.Length * (spacingInDegrees + ScrollableItemLength);
 
-        var itemLengthInRadian = Map(0, 1, 0, 2, ScrollableItemLength / perimeter);
+        var itemLengthInRadian = Map(0, 1, 0, 2 * Mathf.PI, ScrollableItemLength / perimeter);
         var itemLengthInDegree = Mathf.Rad2Deg * itemLengthInRadian;
+
+        var totalSpanDegree = ScrollableItems.Length * (spacingInDegrees + itemLengthInDegree);
 
         var startDegree = 0 - totalSpanDegree / 2;
         var endDegree = totalSpanDegree / 2;
-        return (startDegree, endDegree, spacingInDegrees + itemLengthInDegree);
+        return (startDegree, endDegree, totalSpanDegree / ScrollableItems.Length);
     }
 
     private void PositionCamera(float startDegree, float endDegree)
@@ -121,38 +112,58 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         var beginSegment = startDegree - capStartDegree;
         var endSegment = Mathf.Abs(endDegree - capEndDegree);
 
-        Quaternion cameraRotFixed = GetCameraRotation(beginSegment, endSegment);
+        Quaternion contentOffset = GetCameraRotation(beginSegment, endSegment, startDegree, endDegree);
 
+        contentTransform.localRotation = contentOffset;
+
+        Quaternion cameraRotFixed = IsHorizontal ?
+            Quaternion.Euler(new Vector3(0, (Camera.main.transform.rotation).eulerAngles.y, 0)) :
+            Quaternion.Euler(new Vector3((Camera.main.transform.rotation).eulerAngles.x, (Camera.main.transform.rotation).eulerAngles.y, 0));
         transform.SetPositionAndRotation(Camera.main.transform.position, cameraRotFixed);
     }
 
-
-
-    private Quaternion GetCameraRotation(float beginSegment, float endSegment)
+    private Quaternion GetCameraRotation(float beginSegment, float endSegment, float startDegree, float endDegree)
     {
-        var angleValue = isHorizontal ? Camera.main.transform.rotation.eulerAngles.y : Camera.main.transform.rotation.eulerAngles.x;
+        var angleValue = IsHorizontal ? Camera.main.transform.rotation.eulerAngles.y : Camera.main.transform.rotation.eulerAngles.x;
+        var percentile = GetPercentile(angleValue, startDegree, endDegree);
+        var rotation = GetRotation(angleValue, percentile, beginSegment, endSegment, startDegree, endDegree);
 
-        var percentile = GetPercentile(angleValue);
+        var fixedAngleValue = rotation;
+        // hide spawned objects that does not reside within anglevalue +- 45 degrees
+        foreach (var scrollableItem in scrollableItems.OrderBy(item => item.SpawnedDegreeAngle))
+        {
+            var angleFOV = 70f;
+            if ((scrollableItem.SpawnedDegreeAngle) < (fixedAngleValue + angleFOV) && scrollableItem.SpawnedDegreeAngle > (fixedAngleValue - angleFOV))
+            {
+                scrollableItem.InstantiatedScrollableItem.SetActive(true);
+            }
+            else
+            {
+                scrollableItem.InstantiatedScrollableItem.SetActive(false);
+            }
+        }
 
-        var rotation = GetRotation(angleValue, percentile, beginSegment, endSegment);
-
-        return isHorizontal ?
-            Quaternion.Euler(new Vector3(0, rotation, 0)) :
-            Quaternion.Euler(new Vector3(rotation, Camera.main.transform.rotation.eulerAngles.y, 0));
+        return IsHorizontal ?
+            Quaternion.Euler(new Vector3(0, -rotation, 0)) :
+            Quaternion.Euler(new Vector3(-rotation, 0, 0));
     }
 
-    private float GetPercentile(float rotation)
+    private float GetPercentile(float rotation, float startDegree, float endDegree)
     {
-        // with respect to rotation of camera and min+max rotation, calculate rotation percentage from min to max rotation
+        // returns [0 .. 1] to what degree user is "aimed" towards either start or end caps (-45* / +45*)
         return isDown(rotation) ?
                 Mathf.Clamp(rotation / Mathf.Abs(capEndDegree), 0, 1)
                 : Mathf.Clamp(-1 * (rotation - 360) / Mathf.Abs(capStartDegree), 0, 1);
     }
 
-    private float GetRotation(float angleValue, float percentile, float beginSegment, float endSegment)
+    private float GetRotation(float angleValue, float percentile, float beginSegment, float endSegment, float startDegree, float endDegree)
     {
+        // print("endDegree: " + endDegree + ". capEndDegree: " + capEndDegree);
+        // print("startDegree: " + startDegree + ". capStartDegree: " + capStartDegree);
+        var maxEnd = Mathf.Clamp(Mathf.Abs(endSegment), 0, Mathf.Max(Mathf.Abs(capEndDegree), Mathf.Abs(endDegree)));
+        var maxStart = Mathf.Clamp(Mathf.Abs(beginSegment), 0, Mathf.Max(Mathf.Abs(capStartDegree), Mathf.Abs(startDegree)));
         // with respect to given angle value, percentile, beginSegment and endSegment, compute local-space camera rotation
-        return percentile * (isDown(angleValue) ? -endSegment : -beginSegment);
+        return percentile * (isDown(angleValue) ? maxEnd : -maxStart);
     }
 
     private void Populate()
@@ -160,8 +171,8 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         // spawn each scrollableItem (with proper parenting within Unity)
         foreach (var scrollableItem in ScrollableItems)
         {
-            scrollableItem.InstantiatedScrollableItem = Instantiate(scrollableItem.ItemPrefab);
-            if (spacing == default(float)) spacing = GetSpacing(scrollableItem);
+            scrollableItem.InstantiatedScrollableItem = Instantiate(scrollableItem.ItemPrefab, contentTransform);
+            if (Spacing == default(float)) Spacing = GetSpacing(scrollableItem);
             if (ScrollableItemLength == default(float)) ScrollableItemLength = GetLength(scrollableItem);
         }
     }
@@ -176,28 +187,31 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
 
     private float GetLength(IScrollableItem scrollableItem)
     {
-        return isHorizontal ?
+        // returns with respect to scrollhandler-mode the world-space size of the scrollable item
+        return IsHorizontal ?
             scrollableItem.InstantiatedScrollableItem.GetComponent<Collider>().bounds.size.x :
             scrollableItem.InstantiatedScrollableItem.GetComponent<Collider>().bounds.size.y;
     }
 
     private void PositionContent(float startDegree, float endDegree, float degreeIncrement)
     {
-        var currentDegree = startDegree;
+        var currentDegree = startDegree + degreeIncrement / 2;
 
         foreach (var scrollableItem in ScrollableItems)
         {
-            Vector3 newPos = isHorizontal ?
-                new Vector3(Mathf.Sin(currentDegree) * radius, 0, Mathf.Cos(currentDegree) * radius) :
-                new Vector3(0, Mathf.Sin(currentDegree) * radius, Mathf.Cos(currentDegree) * radius);
+
+            Vector3 newPos = IsHorizontal ?
+                new Vector3(Mathf.Sin(currentDegree * Mathf.Deg2Rad) * radius, 0, Mathf.Cos(currentDegree * Mathf.Deg2Rad) * radius) :
+                new Vector3(0, Mathf.Sin(currentDegree * Mathf.Deg2Rad) * radius, Mathf.Cos(currentDegree * Mathf.Deg2Rad) * radius);
 
             // setting position
             scrollableItem.InstantiatedScrollableItem.transform.localPosition = newPos;
+            scrollableItem.SpawnedDegreeAngle = currentDegree;
 
             // setting rotation
-            scrollableItem.InstantiatedScrollableItem.transform.LookAt(
-                scrollableItem.InstantiatedScrollableItem.transform.position + Camera.main.transform.rotation * Vector3.forward, Vector3.up
-            );
+            var targetDirection = scrollableItem.InstantiatedScrollableItem.transform.position - Camera.main.transform.position;
+            var newRotation = Vector3.RotateTowards(scrollableItem.InstantiatedScrollableItem.transform.forward, targetDirection, 90f, 0.0f);
+            scrollableItem.InstantiatedScrollableItem.transform.rotation = Quaternion.LookRotation(newRotation);
 
             currentDegree += degreeIncrement;
         }
@@ -251,43 +265,26 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
             {
                 Debug.DrawRay(Camera.main.transform.position, directionVector * 1000, Color.green);
 
-
                 var selectionPositionGameObject = FindChildWithTag(selectionTag, hit.transform);
-
 
                 if (selectionPositionGameObject)
                 {
-                    if (spawnedSelection?.transform?.parent == selectionPositionGameObject.transform)
+                    // if (!SpawnedScrollablePointer)
+                    // {
+                    //     SpawnedScrollablePointer = Instantiate(SelectionPrefab, selectionPositionGameObject.transform, false);
+                    // }
+
+                    // SpawnedScrollablePointer.transform.SetParent(selectionPositionGameObject.transform, false);
+
+                    // setting all scrollable item to not have focus
+                    foreach (var item in gameObject.GetComponentsInChildren<Interactable>())
                     {
-
-                    }
-                    else
-                    {
-
-                        if (spawnedSelection)
-                        {
-                            Destroy(spawnedSelection);
-                        }
-
-                        spawnedSelection = Instantiate(selectionPrefab, selectionPositionGameObject.transform, false);
-                        hitDisplay = selectionPositionGameObject.GetComponent<Interactable>();
-
-                        Debug.Log(hit.transform.GetComponent<TextMeshPro>().text);
-
-                        hasHitDisplay = true;
-                        hitDisplay.HasFocus = true;
-
-
-                        foreach (var display in gameObject.GetComponentsInChildren<Interactable>())
-                        {
-                            if (display != hitDisplay)
-                            {
-                                display.HasFocus = false;
-                            }
-                        }
+                        item.HasFocus = false;
                     }
 
-
+                    // setting the scrollable item that was hit to have
+                    PreviousHitScrollableItem = selectionPositionGameObject.GetComponent<Interactable>();
+                    PreviousHitScrollableItem.HasFocus = false;
                 }
             }
         }
@@ -300,14 +297,10 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
 
     public GameObject FindChildWithTag(string tag, Transform parent)
     {
-
-
         foreach (Transform child in parent)
         {
-            //Debug.Log(tag + " == " + child.tag);
             if (child.tag == tag)
             {
-                //Debug.Log("found child");
                 return child.gameObject;
             }
         }
@@ -327,6 +320,9 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     public void SwitchOrientation()
     {
         isHorizontal = !isHorizontal;
+
+        Spacing = GetSpacing(scrollableItems[0]);
+        ScrollableItemLength = GetLength(scrollableItems[0]);
     }
 
 
@@ -350,14 +346,24 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     // only way we can register actions on gameobjects like these, where focus shouldn't be 
     void IMixedRealityInputActionHandler.OnActionEnded(BaseInputEventData eventData)
     {
-        if (hitDisplay)
+        if (PreviousHitScrollableItem)
         {
             // a display has been hit (selected)
-            hitDisplay.SetInputDown();
+            PreviousHitScrollableItem.SetInputDown();
+
         }
         else
         {
             Debug.Log("hit display not been set");
         }
+    }
+
+
+
+
+    private IEnumerator<UnityEngine.WaitForSeconds> WaitFor(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ItemSelected.Invoke(previousHitScrollableItem.transform.GetComponent<OrderItem>().ScrollableID);
     }
 }

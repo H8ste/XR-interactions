@@ -10,4 +10,6 @@ public interface IScrollableItem
 
     int ScrollableID { get; set; }
     GameObject InstantiatedScrollableItem { get; set; }
+
+    float SpawnedDegreeAngle {get; set;}
 }

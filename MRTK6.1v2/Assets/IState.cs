@@ -1,10 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IState
+﻿public interface IState
 {
-    void Instate();
+    void Instantiate();
     void Enable();
     void Disable();
 }

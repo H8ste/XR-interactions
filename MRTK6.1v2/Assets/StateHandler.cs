@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEditor;
@@ -33,9 +32,9 @@ public class StateHandler : MonoBehaviour
     private OrderItem[] orderItems;
     OrderItem[] OrderItems { get { return orderItems; } set { orderItems = value; } }
 
-    // variable used to denote which order item is being processed
-    private int currentIndex;
-    int CurrentIndex { get { return currentIndex; } set { currentIndex = value; } }
+    // // variable used to denote which order item is being processed
+    // private int currentIndex;
+    // int CurrentIndex { get { return currentIndex; } set { currentIndex = value; } }
 
     // variable denoting the beginning state
     private StateType beginningState = StateType.PickingHandler;
@@ -55,8 +54,10 @@ public class StateHandler : MonoBehaviour
     }
 
     /* Public Methods */
-
-    // Method used to start given start
+    /// <summary>
+    /// Used to start given stateType
+    /// </summary>
+    /// <param name="stateTypeToStart">the type of state to start</param>
     public void StartState(StateType stateTypeToStart)
     {
         if (AllStates.ContainsKey(stateTypeToStart) && AllStates.TryGetValue(stateTypeToStart, out IState stateToStart))
@@ -64,9 +65,13 @@ public class StateHandler : MonoBehaviour
             SwitchState(stateToStart);
         }
     }
+
     /* Private Methods */
-    
-    // Private method used to handle the enabling/disabling of new and previous states
+
+    /// <summary>
+    /// Used to handle the enabling/disabling of new and previous states
+    /// </summary>
+    /// <param name="newState">the state to switch to</param>
     private void SwitchState(IState newState)
     {
         // set active state as previous
@@ -80,10 +85,13 @@ public class StateHandler : MonoBehaviour
         activeState?.Enable();
     }
 
-    // Method used to instantiate and set dictionary containing possible states
+    /// <summary>
+    /// Method used to instantiate and set dictionary containing possible states
+    /// </summary>
+    /// <param name="type">the type of state to instantiate</param>
     private IState InstantiateAndReturnState(StateType type)
     {
-         switch (type)
+        switch (type)
         {
             case StateType.PickingHandler:
                 throw new Exception("Appropriate stateHandler for PickingHandler has not been set in StateHandler.cs");
@@ -94,19 +102,19 @@ public class StateHandler : MonoBehaviour
 
             case StateType.ManualOrderPickingHandler:
                 throw new Exception("Appropriate stateHandler for ManualOrderPickingHandler has not been set in StateHandler.cs");
-            
+
                 return null;
                 break;
 
             case StateType.OffloadHandler:
                 throw new Exception("Appropriate stateHandler for OffloadHandler has not been set in StateHandler.cs");
-                
+
                 return null;
                 break;
 
             case StateType.RestockHandler:
                 throw new Exception("Appropriate stateHandler for RestockHandler has not been set in StateHandler.cs");
-               
+
                 return null;
                 break;
 
@@ -116,7 +124,10 @@ public class StateHandler : MonoBehaviour
         }
     }
 
-    // Debugging method to print contents of state-dictionary
+    /// <summary>
+    /// Debugging method to print contents of state-dictionary
+    /// </summary>
+    /// <param name="dict">the dictionary to print contents off</param>
     private void PrintDictionary(Dictionary<StateType, IState> dict)
     {
         foreach (KeyValuePair<StateType, IState> kvp in dict)

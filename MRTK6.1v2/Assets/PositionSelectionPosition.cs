@@ -21,6 +21,7 @@ public class PositionSelectionPosition : MonoBehaviour
         // find scrollHandler in parent
         scrollHandlerReference = transform.GetComponentInParent<ScrollHandler>();
     }
+    
     private void Update()
     {
         var child = Helper.FindChildWithTag(scrollHandlerReference?.PreviousHitScrollableItem?.gameObject, "SelectionPosition");

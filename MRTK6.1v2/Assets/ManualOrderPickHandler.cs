@@ -21,27 +21,40 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
 
     private bool ManualOrderPickHasBeenSelected { get { return manualOrderPickID != -1; } }
 
-
     /// <summary>
     /// Starts a Manual Order Pick with the provided orderItems
     /// </summary>
-    /// <param name="availableOrderItems">old minimum of provided value</param>
+    /// <param name="availableOrderItems">List of available order items</param>
     public async Task<int> ManualOrderPick(OrderItem[] availableOrderItems)
     {
         // sql view hopefully pulls with respect to performant route
         orderItems = availableOrderItems.OrderBy(orderItem => orderItem.IsScanned).ToArray();
 
-        manualOrderItemPrefab = Resources.Load("Prefabs/ManualOrderItem", typeof(GameObject)) as GameObject;
-        if (!manualOrderItemPrefab) Debug.LogError("Prefab ManualOrderItem does not exist");
-
         Enable();
-
-        StartScroll();
 
         cancellationTokenSource = new CancellationTokenSource();
         return await WaitForManualOrderPick(cancellationTokenSource);
     }
 
+    private void Enable()
+    {
+        manualOrderItemPrefab = Resources.Load("Prefabs/ManualOrderItem", typeof(GameObject)) as GameObject;
+        if (!manualOrderItemPrefab) Debug.LogError("Prefab ManualOrderItem does not exist");
+
+        // order item's itemprefab will have to be setup (as it might have been set differently)
+        foreach (var item in orderItems)
+        {
+            item.SwitchPrefab(manualOrderItemPrefab);
+        }
+
+        StartScroll();
+    }
+
+    private void Disable()
+    {
+        // close any possible loose ends
+        cancellationTokenSource.Cancel();
+    }
 
     /// <summary>
     /// Coroutine that returns the selected orderItem once scrollHandler has invoked its ItemSelected Event
@@ -63,8 +76,6 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
         // manual order pick has been selected
         return manualOrderPickID;
     }
-
-
 
     /// <summary>
     /// Instantiates a scrollHandler, initialises it with orderItems, sets properties on instantiated order item prefabs, and subscribes to the scrollHandler's ItemSelected event
@@ -90,7 +101,6 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
             manualOrderPickID = returnVar;
         });
     }
-
 
     /// <summary>
     /// Sets the provided orderItem's text/image elements within its instantiated object to their respective values
@@ -124,23 +134,10 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
         }
     }
 
-    private void Enable()
-    {
-        // order item's itemprefab will have to be setup (as it might have been set differently)
-        foreach (var item in orderItems)
-        {
-            item.SwitchPrefab(manualOrderItemPrefab);
-        }
-    }
-
-    private void Disable()
-    {
-        // close any possible loose ends
-        cancellationTokenSource.Cancel();
-    }
-
-
-
+    /// <summary>
+    /// Is called once the gameobject that ManualOrderPickHandler is attached to is set to be destroyed by Unity
+    /// (e.g., when unity closes)
+    /// </summary>
     private void OnDestroy()
     {
         Disable();

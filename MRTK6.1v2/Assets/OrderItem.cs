@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OrderItem : IScrollableItem
 {
     /* IScrollableItem Properties */
+
     private GameObject itemPrefab;
     public GameObject ItemPrefab { get { return itemPrefab; } set { itemPrefab = value; } }
 
@@ -18,19 +17,26 @@ public class OrderItem : IScrollableItem
     public GameObject InstantiatedScrollableItem { get { return instantiatedScrollableItem; } set { instantiatedScrollableItem = value; } }
 
     private float spawnedDegreeAngle;
-    public float SpawnedDegreeAngle {get {return spawnedDegreeAngle;} set {spawnedDegreeAngle = value;}}
+    public float SpawnedDegreeAngle { get { return spawnedDegreeAngle; } set { spawnedDegreeAngle = value; } }
+
 
     /* OrderItem Properties */
 
     private LocPK locationCode;
     public LocPK LocationCode { get { return locationCode; } }
+
     private short? remainingStock;
+    public short? RemainingStock { get { return remainingStock; } }
+
     private short? amountToTake;
     public short? AmountToTake { get { return amountToTake; } }
+
     private string nameOfItem;
     public string NameOfItem { get { return nameOfItem; } }
+
     private short? itemID;
-    public short? ItemID {get {return itemID;}}
+    public short? ItemID { get { return itemID; } }
+
     private bool isScanned;
     public bool IsScanned { get { return isScanned; } }
 

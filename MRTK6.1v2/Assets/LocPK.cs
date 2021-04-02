@@ -22,12 +22,6 @@ public class LocPK : ScriptableObject
     private string side;
     public string Side { get { return side; } set { side = value; } }
 
-
-    public string GetLocPKAsString()
-    {
-        return $"{StockNo}-{AisleNo}-{X}-{Y}-{Z}-{Side}";
-    }
-
     public LocPK(short stockNo, short aisleNo, short x, short y, short z, string side)
     {
         StockNo = stockNo;
@@ -37,4 +31,10 @@ public class LocPK : ScriptableObject
         Z = z;
         Side = side;
     }
+
+    public string GetLocPKAsString()
+    {
+        return $"{StockNo}-{AisleNo}-{X}-{Y}-{Z}-{Side}";
+    }
+
 }

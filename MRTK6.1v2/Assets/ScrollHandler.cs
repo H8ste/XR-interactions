@@ -32,7 +32,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     private GameObject instantiatedScrollablePointer;
     private GameObject InstantiatedScrollablePointer { get { return instantiatedScrollablePointer; } set { instantiatedScrollablePointer = value; } }
 
-    // ref to the transform that acs as parent to all spawned scrollable items
+    // ref to the transform that acts as parent to all spawned scrollable items
     [SerializeField]
     private Transform contentTransform;
 
@@ -60,7 +60,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     private float scrollableItemLength;
     public float ScrollableItemLength { get { return scrollableItemLength; } set { scrollableItemLength = value; } }
 
-    // how far away the scrollable items are spawned 
+    // how far away from the player the scrollable items are spawned 
     [SerializeField]
     private float radius = 2f;
 
@@ -74,6 +74,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     // reference to the most previous hit scrollable item
     private Interactable previousHitScrollableItem;
     public Interactable PreviousHitScrollableItem { get { return previousHitScrollableItem; } private set { previousHitScrollableItem = value; } }
+
 
     /* Unity MonoBehaviour Methods */
 
@@ -105,7 +106,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         if (Physics.Raycast(Camera.main.transform.position, directionVector, out RaycastHit hit, radius + 1f, layerMask))
         {
             Debug.DrawRay(Camera.main.transform.position, directionVector * 1000, Color.green);
-            // place ScrollablePointer as the hit object's parent (also changes world-space coordinates of ScrollablePointer)
+            // place ScrollablePointer at the hit object's transform as its child (also changes world-space coordinates of ScrollablePointer)
             switch (InstantiatedScrollablePointer)
             {
                 case null:
@@ -121,14 +122,8 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
             PreviousHitScrollableItem = hit.transform.GetComponent<Interactable>();
             foreach (var item in gameObject.GetComponentsInChildren<Interactable>())
             {
-                if (PreviousHitScrollableItem == item)
-                {
-                    PreviousHitScrollableItem.HasFocus = false;
-                }
-                else
-                {
-                    item.HasFocus = false;
-                }
+                if (PreviousHitScrollableItem == item) PreviousHitScrollableItem.HasFocus = false;
+                else item.HasFocus = false;
             }
         }
         else
@@ -203,6 +198,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
 
         var startDegree = 0 - totalSpanDegree / 2;
         var endDegree = totalSpanDegree / 2;
+
         return (startDegree, endDegree, totalSpanDegree / ScrollableItems.Length);
     }
 
@@ -247,7 +243,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         foreach (var scrollableItem in scrollableItems.OrderBy(item => item.SpawnedDegreeAngle))
         {
             var angleFOV = 70f;
-            if ((scrollableItem.SpawnedDegreeAngle) < (fixedAngleValue + angleFOV) && scrollableItem.SpawnedDegreeAngle > (fixedAngleValue - angleFOV))
+            if (IsWithinView(scrollableItem, fixedAngleValue, angleFOV))
             {
                 scrollableItem.InstantiatedScrollableItem.SetActive(true);
             }
@@ -260,6 +256,19 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         return IsHorizontal ?
             Quaternion.Euler(new Vector3(0, -rotation, 0)) :
             Quaternion.Euler(new Vector3(-rotation, 0, 0));
+    }
+
+    /// <summary>
+    /// Computes whether the item passed is within the current angle with respect to some angleFOV
+    /// </summary>
+    /// <param name="scrollableItem">a scrollable item to check for</param>
+    /// <param name="currentAngle">the current viewing angle of the player</param>
+    /// <param name="angleFOV">the angle to live within</param>
+    private bool IsWithinView(IScrollableItem scrollableItem, float currentAngle, float angleFOV)
+    {
+        return (
+            (scrollableItem.SpawnedDegreeAngle) < (currentAngle + angleFOV) &&
+             scrollableItem.SpawnedDegreeAngle > (currentAngle - angleFOV));
     }
 
     /// <summary>
@@ -344,7 +353,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
                 new Vector3(Mathf.Sin(currentDegree * Mathf.Deg2Rad) * radius, 0, Mathf.Cos(currentDegree * Mathf.Deg2Rad) * radius) :
                 new Vector3(0, Mathf.Sin(currentDegree * Mathf.Deg2Rad) * radius, Mathf.Cos(currentDegree * Mathf.Deg2Rad) * radius);
 
-            // setting position
+            // setting position and spawned angle
             scrollableItem.InstantiatedScrollableItem.transform.localPosition = newPos;
             scrollableItem.SpawnedDegreeAngle = currentDegree;
 
@@ -366,9 +375,6 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         return (cameraRotation < 360 && cameraRotation <= 180);
     }
 
-  
-
-
     /* MRTK Relevant Methods */
 
     private void OnEnable()
@@ -386,7 +392,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         // not used
     }
 
-    // is triggered if all other gameobjects in scene did not respond to a Action - works as a fallback
+    // is triggered if all other gameobjects in scene did not respond to an Action - works as a fallback
     // only way we can register actions on gameobjects like these, where focus shouldn't be 
     void IMixedRealityInputActionHandler.OnActionEnded(BaseInputEventData eventData)
     {
@@ -411,5 +417,4 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
         // if no scrollable item could be found, a -1 is returned and expected to be handled in what started the scrollhandler
         ItemSelected.Invoke(clickedID ?? -1);
     }
-
 }

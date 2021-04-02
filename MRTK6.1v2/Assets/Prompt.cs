@@ -1,8 +1,4 @@
-﻿
-using UnityEngine;
-
-
-public class Prompt
+﻿public class Prompt
 {
     private PromptOption[] promptOptions;
     public PromptOption[] PromptOptions { get { return promptOptions; }}
@@ -22,4 +18,3 @@ public class Prompt
     }
 
 }
-

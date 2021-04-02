@@ -1,5 +1,4 @@
-﻿
-public enum PromptType
+﻿public enum PromptType
 {
     PrintOrderLabel,
     StartManualPick,

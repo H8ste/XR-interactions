@@ -516,7 +516,7 @@ GameObject:
   - component: {fileID: 856683626970553286}
   m_Layer: 10
   m_Name: ManualOrderItem
-  m_TagString: SelectionPosition
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

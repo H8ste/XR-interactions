@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 using TMPro;
 using System.Linq;
+using System.Threading;
 
 public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
 {
@@ -16,9 +17,15 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
 
     private int manualOrderPickID = -1;
 
+    CancellationTokenSource cancellationTokenSource;
 
     private bool ManualOrderPickHasBeenSelected { get { return manualOrderPickID != -1; } }
 
+
+    /// <summary>
+    /// Starts a Manual Order Pick with the provided orderItems
+    /// </summary>
+    /// <param name="availableOrderItems">old minimum of provided value</param>
     public async Task<int> ManualOrderPick(OrderItem[] availableOrderItems)
     {
         // sql view hopefully pulls with respect to performant route
@@ -31,26 +38,40 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
 
         StartScroll();
 
-        return await WaitForManualOrderPick();
+        cancellationTokenSource = new CancellationTokenSource();
+        return await WaitForManualOrderPick(cancellationTokenSource);
     }
 
-    private async Task<int> WaitForManualOrderPick()
+
+    /// <summary>
+    /// Coroutine that returns the selected orderItem once scrollHandler has invoked its ItemSelected Event
+    /// </summary>
+    private async Task<int> WaitForManualOrderPick(CancellationTokenSource cts)
     {
-        // while (!ManualOrderPickHasBeenSelected)
-        // {
-        //     await Task.Delay(TimeSpan.FromSeconds(1));
-        //     Debug.Log("still waiting");
-        // }
+        while (!ManualOrderPickHasBeenSelected)
+        {
+            // if at any point cancellation is requested
+            if (cts.IsCancellationRequested)
+            {
+                return -1;
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(1));
+            Debug.Log("still waiting");
+        }
 
         // manual order pick has been selected
-        // return manualOrderPickID;
-        return -1;
+        return manualOrderPickID;
     }
 
+
+
+    /// <summary>
+    /// Instantiates a scrollHandler, initialises it with orderItems, sets properties on instantiated order item prefabs, and subscribes to the scrollHandler's ItemSelected event
+    /// </summary>
     private void StartScroll()
     {
         scrollHandler = Instantiate((Resources.Load("Prefabs/ScrollHandler", typeof(GameObject)) as GameObject), transform).GetComponent<ScrollHandler>();
-
 
         // this next two operations are ugly, is there a better approach?
 
@@ -58,10 +79,8 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
         scrollHandler.Init(orderItems);
 
         // For each spawned order item, set correct properties
-        print("length: " + orderItems.Length);
         foreach (var orderItem in orderItems)
         {
-            print("setting properties on prefab");
             SetPropertiesOnInstantiatedInstance(orderItem);
         }
 
@@ -72,43 +91,38 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
         });
     }
 
-    // private void 
+
+    /// <summary>
+    /// Sets the provided orderItem's text/image elements within its instantiated object to their respective values
+    /// </summary>
+    /// <param name="orderItem">orderItem to set properties on its instantiated instance</param>
     private void SetPropertiesOnInstantiatedInstance(OrderItem orderItem)
     {
-        // setting properties on prefab
-
         // scan state
         orderItem.InstantiatedScrollableItem.GetComponentInChildren<ImageHandler>()?.SetImage(orderItem.IsScanned);
 
         // loc code
-        var locPK = FindChildWithTag(orderItem.InstantiatedScrollableItem, "LocPK")?.GetComponent<TextMeshPro>();
+        var locPK = Helper.FindChildWithTag(orderItem.InstantiatedScrollableItem, "LocPK")?.GetComponent<TextMeshPro>();
         if (locPK != null && orderItem.LocationCode != null)
         {
             locPK.SetText(orderItem.LocationCode.GetLocPKAsString(), false);
         }
-        else print("locPK");
-
 
         // amount to pick
-        var amount = FindChildWithTag(orderItem.InstantiatedScrollableItem, "Amount")?.GetComponent<TextMeshPro>();
+        var amount = Helper.FindChildWithTag(orderItem.InstantiatedScrollableItem, "Amount")?.GetComponent<TextMeshPro>();
         if (amount != null && orderItem.AmountToTake.HasValue)
         {
             amount.SetText(orderItem.AmountToTake.ToString(), false);
         }
-        else print("amount");
 
         // item name
-        var itemName = FindChildWithTag(orderItem.InstantiatedScrollableItem, "ItemName")?.GetComponent<TextMeshPro>();
+        var itemName = Helper.FindChildWithTag(orderItem.InstantiatedScrollableItem, "ItemName")?.GetComponent<TextMeshPro>();
 
         if (itemName != null && orderItem.NameOfItem != null)
         {
             itemName.SetText(orderItem.NameOfItem, false);
-            print("succes: nameOfItem" + orderItem.NameOfItem);
         }
-        else print("itemname");
     }
-
-
 
     private void Enable()
     {
@@ -119,23 +133,16 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
         }
     }
 
-
-
     private void Disable()
     {
-
+        // close any possible loose ends
+        cancellationTokenSource.Cancel();
     }
 
-    private GameObject FindChildWithTag(GameObject root, string tag)
+
+
+    private void OnDestroy()
     {
-        foreach (Transform t in root.GetComponentsInChildren<Transform>())
-        {
-            print(t.tag);
-            if (t.tag == tag) return t.gameObject;
-        }
-
-        Debug.LogError("Couldn't find child with tag");
-        return null;
-
+        Disable();
     }
 }

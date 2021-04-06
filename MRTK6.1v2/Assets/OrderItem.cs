@@ -20,14 +20,6 @@ public class OrderItem: IScrollableItem
     /* OrderItem Properties */
 
     // private LockPK locationCode
-    
-    private short remainingStock;
-    private short amountToTake;
-=======
-    public int ScrollableID { get { return scrollableID; } set { scrollableID = value; } }
-
-    private GameObject instantiatedScrollableItem;
-    public GameObject InstantiatedScrollableItem { get { return instantiatedScrollableItem; } set { instantiatedScrollableItem = value; } }
 
     private float spawnedDegreeAngle;
     public float SpawnedDegreeAngle { get { return spawnedDegreeAngle; } set { spawnedDegreeAngle = value; } }
@@ -44,7 +36,6 @@ public class OrderItem: IScrollableItem
     private short? amountToTake;
     public short? AmountToTake { get { return amountToTake; } }
 
->>>>>>> #ManualOrderPick
     private string nameOfItem;
     public string NameOfItem { get { return nameOfItem; } }
 

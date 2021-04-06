@@ -64,6 +64,8 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     [SerializeField]
     private float radius = 2f;
 
+    public float Radius { get { return radius; } }
+
     // how far, in a viewing angle starting from 0*, can the camera rotate [capStartDegree .. capEndDegree]
     private float capStartDegree = 45f;
     private float capEndDegree = -45f;

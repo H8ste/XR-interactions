@@ -9,10 +9,16 @@ public class PickingHandler: MonoBehaviour
     Display nextDisplay;
     OrderItem current;
     OrderItem next;
+    GameObject displayObject;
+    GameObject currentDisplayObject;
+    GameObject nextDisplayObject;
+    
     //ScanFeedback scanFeedback;
     //PromptHandler prompt;
     //PromptType promptType;
     
+    //TODO: Merge with prompt code
+    //TODO: Make sure the next item is placed correctly
 
     void Start()
     {
@@ -29,23 +35,26 @@ public class PickingHandler: MonoBehaviour
 
     public bool PickItemHandler(OrderItem activePick, OrderItem nextPick)
     {
-        var displayPrefab = (GameObject)(Resources.Load("Prefabs/InformationDisplay"));
+        var displayHolderPrefab = (GameObject)(Resources.Load("Prefabs/DisplayHolder"));
 
-        currentDisplay = Instantiate(displayPrefab).GetComponent<Display>();
+        displayObject = Instantiate(displayHolderPrefab);
+
+        currentDisplayObject = Helper.FindChildWithTag(displayObject, "CurrentDisplay");
+        currentDisplay = currentDisplayObject.GetComponent<Display>();
         currentDisplay.SetInformation(activePick);
 
-        nextDisplay = Instantiate(displayPrefab).GetComponent<Display>();
-        nextDisplay.SetInformation(nextPick);
+        currentDisplayObject = Helper.FindChildWithTag(displayObject, "NextDisplay");
+        nextDisplay = nextDisplayObject.GetComponent<Display>();
+        nextDisplay.SetInformation(activePick);
 
-        
 
         return true;
     }
-
-
+    
     private void Enable()
     {
-        
+          
+
     }
     private void Disable()
     {

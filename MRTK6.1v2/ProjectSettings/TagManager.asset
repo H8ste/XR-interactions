@@ -7,6 +7,8 @@ TagManager:
   - IndexFingerCollider
   - SwipeGesture
   - SelectionPosition
+  - CurrentDisplay
+  - NextDisplay
   layers:
   - Default
   - TransparentFX

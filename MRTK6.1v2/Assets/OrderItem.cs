@@ -1,8 +1,13 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class OrderItem : IScrollableItem
 {
     /* IScrollableItem Properties */
+    private GameObject instantiatedScrollableItem;
+    public GameObject InstantiatedScrollableItem { get { return instantiatedScrollableItem; } set { instantiatedScrollableItem = value; } }
+
     private GameObject itemPrefab;
     public GameObject ItemPrefab { get { return itemPrefab; } set { itemPrefab = value; } }
 
@@ -15,29 +20,47 @@ public class OrderItem : IScrollableItem
     /* OrderItem Properties */
 
     // private LockPK locationCode
-    private short remainingStock;
-    public short RemainingStock { get { return remainingStock; } }
 
-    private short amountToTake;
-    public short AmountToTake { get { return amountToTake; } }
+    private float spawnedDegreeAngle;
+    public float SpawnedDegreeAngle { get { return spawnedDegreeAngle; } set { spawnedDegreeAngle = value; } }
+
+
+    /* OrderItem Properties */
+
+    private LocPK locationCode;
+    public LocPK LocationCode { get { return locationCode; } }
+
+    private short? remainingStock;
+    public short? RemainingStock { get { return remainingStock; } }
+
+    private short? amountToTake;
+    public short? AmountToTake { get { return amountToTake; } }
 
     private string nameOfItem;
     public string NameOfItem { get { return nameOfItem; } }
 
-    private short itemID;
+    private short? itemID;
+    public short? ItemID { get { return itemID; } }
 
-    public short ItemID { get { return itemID; } }
 
     private bool isScanned;
     public bool IsScanned { get { return isScanned; } }
 
-    public OrderItem(short stock, short amount, string name, short ID, bool scanned)
+
+    public OrderItem(OnClick onClick, LocPK locationCode, int orderItemID, short remainingStock, short amountToTake, string nameOfItem, short itemID, bool isScanned)
     {
-        remainingStock = stock;
-        amountToTake = amount;
-        nameOfItem = name;
-        itemID = ID;
-        isScanned = scanned;
+        this.onClick = onClick;
+        this.locationCode = locationCode;
+        this.scrollableID = orderItemID;
+        this.remainingStock = remainingStock;
+        this.amountToTake = amountToTake;
+        this.nameOfItem = nameOfItem;
+        this.itemID = itemID;
+        this.isScanned = isScanned;
     }
 
+    public void SwitchPrefab(GameObject newPrefab)
+    {
+        itemPrefab = newPrefab;
+    }
 }

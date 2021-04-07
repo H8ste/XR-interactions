@@ -9,6 +9,10 @@ TagManager:
   - SelectionPosition
   - CurrentDisplay
   - NextDisplay
+  - Amount
+  - ItemName
+  - LocPK
+  - OptionText
   layers:
   - Default
   - TransparentFX

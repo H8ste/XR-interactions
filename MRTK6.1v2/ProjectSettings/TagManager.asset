@@ -5,8 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - IndexFingerCollider
-  - SwipeGesture
-  - SelectionPosition
   layers:
   - Default
   - TransparentFX
@@ -18,7 +16,7 @@ TagManager:
   - 
   - 
   - 
-  - SelectionPosition
+  - 
   - 
   - 
   - 

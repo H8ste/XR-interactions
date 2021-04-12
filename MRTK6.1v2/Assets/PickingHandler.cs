@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PickingHandler : MonoBehaviour
+public class PickingHandler : MonoBehaviour, ITab
 {
     DisplayInformationHandler displayInformationHandler;
     Display currentDisplay;
@@ -17,6 +17,8 @@ public class PickingHandler : MonoBehaviour
 
 
     private RawImage scanImage;
+
+    DataHandler dataHandler;
 
     void Start()
     {
@@ -46,26 +48,33 @@ public class PickingHandler : MonoBehaviour
         nextDisplay.SetInformation(newNextPick);
     }
 
-    private void Enable()
+    public void Enable()
     {
         promptHandler = promptHandler ?? gameObject.AddComponent<PromptHandler>();
 
         PrintLabelPrompt();
 
-        displayHolder = (GameObject)(Resources.Load("Prefabs/DisplayHolder"));
         displayObject = Instantiate(displayHolder);
 
         currentDisplayObject = Helper.FindChildWithTag(displayObject, "CurrentDisplay");
-        currentDisplay = currentDisplayObject.GetComponent<Display>();
-
         nextDisplayObject = Helper.FindChildWithTag(displayObject, "NextDisplay");
+
+        currentDisplay = currentDisplayObject.GetComponent<Display>();
         nextDisplay = nextDisplayObject.GetComponent<Display>();
 
     }
-    private void Disable()
+    public void Disable()
     {
         Destroy(displayObject.gameObject);
         Destroy(scanFeedback);
+    }
+
+    public ITab Construct(DataHandler dataHandler)
+    {
+        this.dataHandler = dataHandler;
+        displayHolder = (GameObject)(Resources.Load("Prefabs/DisplayHolder"));
+
+        return this;
     }
 
     private void OnScan()
@@ -112,4 +121,5 @@ public class PickingHandler : MonoBehaviour
         }
     }
 
+  
 }

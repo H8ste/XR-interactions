@@ -1,4 +1,4 @@
-﻿public enum StateType
+﻿public enum TabType
 {
     PickingHandler,
     ManualOrderPickingHandler,

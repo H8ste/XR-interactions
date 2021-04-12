@@ -2,4 +2,5 @@
 {
     PrintOrderLabel,
     StartManualPick,
+    ConfirmOrder,
 }

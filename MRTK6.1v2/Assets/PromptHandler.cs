@@ -175,17 +175,22 @@ public class PromptHandler : MonoBehaviour
                 return new PromptOption[]
                 {
                    new PromptOption("Bekræft", promptOptionPrefab, null, 0),
-                   new PromptOption("Fortryd", promptOptionPrefab, null, 0),
+                   new PromptOption("Fortryd", promptOptionPrefab, null, 1),
                 };
             case PromptType.StartManualPick:
                 return new PromptOption[]
                 {
                    new PromptOption("text 1", promptOptionPrefab, null, 0),
-                   new PromptOption("text 2" , promptOptionPrefab, null, 0),
-                   new PromptOption("text 3", promptOptionPrefab, null, 0),
-                   new PromptOption("text 4", promptOptionPrefab, null, 0),
+                   new PromptOption("text 2" , promptOptionPrefab, null, 1),
+                   new PromptOption("text 3", promptOptionPrefab, null, 2),
+                   new PromptOption("text 4", promptOptionPrefab, null, 3),
                 };
-
+            case PromptType.ConfirmOrder:
+                return new PromptOption[]
+                {
+                   new PromptOption("Bekræft", promptOptionPrefab, null, 0),
+                   new PromptOption("Fortryd", promptOptionPrefab, null, 1),
+                };
             default:
                 throw new Exception("Tried to retrieve options for an unhandled PromptType");
                 break;
@@ -204,10 +209,11 @@ public class PromptHandler : MonoBehaviour
         {
             // retrieve set of questions/options from database on instantiation of prompthandler
             case PromptType.PrintOrderLabel:
-                return "Would you like to print the order label?";
+                return "print order label?";
             case PromptType.StartManualPick:
-                return "Print label manually?";
-
+                return "Print label?";
+            case PromptType.ConfirmOrder:
+                return "Bekræft odre?";
             default:
                 throw new Exception("Tried to retrieve question for an unhandled PromptType");
                 return null;

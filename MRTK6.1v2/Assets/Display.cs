@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 public class Display: MonoBehaviour
 {
+    
     [SerializeField]
     private TextMeshPro locationCode;
     [SerializeField]
@@ -15,15 +14,14 @@ public class Display: MonoBehaviour
     private TextMeshPro nameOfItem;
     [SerializeField]
     private TextMeshPro itemIDText;
-
-
+    
     RackVisualizer visualizer;
 
     public void SetInformation(OrderItem orderItemToSet, bool createVisualizer = false)
     {
         if(locationCode == null)
         {
-            
+            Debug.LogError("location code is null");
         }
         if (remainingStock   == null)
         {
@@ -42,14 +40,15 @@ public class Display: MonoBehaviour
 
         }
 
-        //locationCodeText = informationToShow (Make this once the location code is up and running)
-        remainingStock.text = orderItemToSet.RemainingStock.ToString();
-        amountToTake.text = orderItemToSet.AmountToTake.ToString();
+
+        locationCode.text = orderItemToSet.LocationCode.GetLocPKAsString();
+        remainingStock.text = "Lag: " + orderItemToSet.RemainingStock.ToString();
+        amountToTake.text = "Stk: " + orderItemToSet.AmountToTake.ToString();
         nameOfItem.text = orderItemToSet.NameOfItem;
-        itemIDText.text = orderItemToSet.ItemID.ToString();
-
-
+        itemIDText.text = "ID: " + orderItemToSet.ItemID.ToString();
+        
     }
-
+    
+    
   
 }

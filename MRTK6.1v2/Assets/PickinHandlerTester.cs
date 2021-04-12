@@ -14,7 +14,7 @@ public class PickinHandlerTester : MonoBehaviour
         next = new OrderItem(null, new LocPK(50, 20, 12, 10, 10, "L"), 1, 110, 9, "Cencor", 251, true);
 
         pickingHandler = gameObject.AddComponent<PickingHandler>();
-        pickingHandler.PickItemHandler(current, next);
+        pickingHandler.BeginNewPick();
         
     }
 

@@ -1,10 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PickingHandler : MonoBehaviour
+public class PickingHandler : MonoBehaviour /*, IState*/
 {
-    DisplayInformationHandler displayInformationHandler;
     Display currentDisplay;
     Display nextDisplay;
     GameObject displayObject;
@@ -16,6 +16,9 @@ public class PickingHandler : MonoBehaviour
     PromptType promptType;
     OrderItem current;
     OrderItem next;
+    //How do we actually access the instance of dataHandler? 
+    [SerializeField]
+    DataHandler dataHandler;
 
     private RawImage scanImage;
 
@@ -36,38 +39,46 @@ public class PickingHandler : MonoBehaviour
 
         BeginNewPick();
 
-        InstantiateDisplay();
-
         
-
     }
     /// <summary>
     /// Starts a new pick and spawns information displays with info corresponding to the current order items
     /// </summary>
     /// <returns></returns>
-    public async Task<bool> BeginNewPick()
+    public void BeginNewPick()
     {
         promptHandler = promptHandler ?? gameObject.AddComponent<PromptHandler>();
-
+        
         PrintLabelPrompt();
         InstantiateDisplay();
 
-        //Debugging orderItems.
-        current = new OrderItem(null, new LocPK(40, 10, 10, 10, 10, "X"), 0, 33, 1, "Pumpe", 254, false);
-        next = new OrderItem(null, new LocPK(50, 20, 12, 10, 10, "L"), 1, 110, 9, "Cencor", 251, true);
+        SetDisplayInfo();
 
-        SetDisplayInfo(current, next);
         
-        return true;
     }
-    private void SetDisplayInfo(OrderItem ActivePick, OrderItem NextPick)
+    /// <summary>
+    /// Called when the picking handler tab is switched away from
+    /// </summary>
+    public void Disable()
     {
-        //Talk to DataHandler here to get the relevant info. 
-        currentDisplay.SetInformation(ActivePick);
-        nextDisplay.SetInformation(NextPick);
+        Destroy(displayObject.gameObject);
+        Destroy(scanFeedback);
+        Destroy(promptHandler);
+    }
+    /// <summary>
+    /// Sets the information on the displays to the current and next orderItem respectively
+    /// </summary>
+    private void SetDisplayInfo()
+    {
+        var currentPick = dataHandler.SelectedItem;
+        currentDisplay.SetInformation(currentPick);
+
+        //Finds the index of the current orderitem from the DataHandler and sets the other display to the next item in the list.
+        nextDisplay.SetInformation(dataHandler.AllOrderItems[dataHandler.SelectedItemIndex +1]);
+
     }
 
-  
+
     /// <summary>
     /// Instantiates the display holder object and the current/next display objects
     /// </summary>
@@ -81,15 +92,6 @@ public class PickingHandler : MonoBehaviour
 
         nextDisplayObject = Helper.FindChildWithTag(displayObject, "NextDisplay");
         nextDisplay = nextDisplayObject.GetComponent<Display>();
-    }
-    /// <summary>
-    /// Called when the picking handler tab is switched away from
-    /// </summary>
-    public void Disable()
-    {
-        Destroy(displayObject.gameObject);
-        Destroy(scanFeedback);
-        Destroy(promptHandler);
     }
 
     private void OnScan()

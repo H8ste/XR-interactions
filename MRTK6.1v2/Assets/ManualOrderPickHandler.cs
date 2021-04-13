@@ -4,77 +4,66 @@ using System.Threading.Tasks;
 using TMPro;
 using System.Linq;
 using System.Threading;
+using UnityEngine.Events;
 
-public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
+public class ManualOrderPickHandler : MonoBehaviour, ITab
 {
-    private OrderItem[] orderItems;
-
-    public OrderItem[] OrderItems { get { return orderItems; } }
+    public OrderItem[] OrderItems { get { return dataHandler?.AllOrderItems; } }
 
     private GameObject manualOrderItemPrefab;
 
     private ScrollHandler scrollHandler;
 
-    private int manualOrderPickID = -1;
-
     CancellationTokenSource cancellationTokenSource;
 
-    private bool ManualOrderPickHasBeenSelected { get { return manualOrderPickID != -1; } }
+    private DataHandler dataHandler;
 
-    /// <summary>
-    /// Starts a Manual Order Pick with the provided orderItems
-    /// </summary>
-    /// <param name="availableOrderItems">List of available order items</param>
-    public async Task<int> ManualOrderPick(OrderItem[] availableOrderItems)
+
+    public async void Enable()
     {
-        // sql view hopefully pulls with respect to performant route
-        orderItems = availableOrderItems.OrderBy(orderItem => orderItem.IsScanned).ToArray();
-
-        Enable();
-
-        cancellationTokenSource = new CancellationTokenSource();
-        return await WaitForManualOrderPick(cancellationTokenSource);
-    }
-
-    private void Enable()
-    {
-        manualOrderItemPrefab = Resources.Load("Prefabs/ManualOrderItem", typeof(GameObject)) as GameObject;
-        if (!manualOrderItemPrefab) Debug.LogError("Prefab ManualOrderItem does not exist");
-
         // order item's itemprefab will have to be setup (as it might have been set differently)
-        foreach (var item in orderItems)
+        foreach (var item in OrderItems)
         {
             item.SwitchPrefab(manualOrderItemPrefab);
         }
 
         StartScroll();
+
+        // logic denoting what to do with 
     }
 
-    private void Disable()
+    public void Disable()
     {
         // close any possible loose ends
         cancellationTokenSource.Cancel();
+
+        // remove scrollHandler
+        scrollHandler.ItemSelected.RemoveListener(ItemClicked);
+        Destroy(scrollHandler);
     }
 
-    /// <summary>
-    /// Coroutine that returns the selected orderItem once scrollHandler has invoked its ItemSelected Event
-    /// </summary>
-    private async Task<int> WaitForManualOrderPick(CancellationTokenSource cts)
+
+
+    public ITab Construct(DataHandler dataHandler)
     {
-        while (!ManualOrderPickHasBeenSelected)
-        {
-            // if at any point cancellation is requested
-            if (cts.IsCancellationRequested)
-            {
-                return -1;
-            }
+        this.dataHandler = dataHandler;
 
-            await Task.Delay(TimeSpan.FromSeconds(1));
-            Debug.Log("still waiting");
-        }
+        manualOrderItemPrefab = Resources.Load("Prefabs/ManualOrderItem", typeof(GameObject)) as GameObject;
+        if (!manualOrderItemPrefab) Debug.LogError("Prefab ManualOrderItem does not exist");
 
-        // manual order pick has been selected
-        return manualOrderPickID;
+        return this;
+    }
+
+    private void ItemClicked(int clickedItemIndex)
+    {
+
+        Debug.Log("ScrollHandler finished: " + clickedItemIndex);
+
+
+        // logic denoting what to do now with clicked orderItem
+        // switch tab etc.
+
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -82,24 +71,20 @@ public class ManualOrderPickHandler : MonoBehaviour /*, IState*/
     /// </summary>
     private void StartScroll()
     {
-        scrollHandler = Instantiate((Resources.Load("Prefabs/ScrollHandler", typeof(GameObject)) as GameObject), transform).GetComponent<ScrollHandler>();
+        scrollHandler = scrollHandler ?? Instantiate((Resources.Load("Prefabs/ScrollHandler", typeof(GameObject)) as GameObject), transform).GetComponent<ScrollHandler>();
 
         // this next two operations are ugly, is there a better approach?
 
         // Instantiate each order item
-        scrollHandler.Init(orderItems);
+        scrollHandler.Init(OrderItems);
 
         // For each spawned order item, set correct properties
-        foreach (var orderItem in orderItems)
+        foreach (var orderItem in OrderItems)
         {
             SetPropertiesOnInstantiatedInstance(orderItem);
         }
 
-        scrollHandler.ItemSelected.AddListener((int returnVar) =>
-        {
-            Debug.Log("ScrollHandler finished: " + returnVar);
-            manualOrderPickID = returnVar;
-        });
+        scrollHandler.ItemSelected.AddListener(ItemClicked);
     }
 
     /// <summary>

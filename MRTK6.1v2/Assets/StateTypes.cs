@@ -1,7 +1,5 @@
 ﻿public enum StateType
 {
-    PickingHandler,
-    ManualOrderPickingHandler,
-    OffloadHandler,
-    RestockHandler,   
+    Login,
+    Play,
 }

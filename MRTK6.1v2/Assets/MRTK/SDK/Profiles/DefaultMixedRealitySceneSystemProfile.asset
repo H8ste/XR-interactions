@@ -17,8 +17,8 @@ MonoBehaviour:
   managerScene:
     Name: ManagerScene
     Path: Assets/Scenes/ManagerScene.unity
-    Included: 1
-    BuildIndex: 0
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 96c54956c1e510745bf18afe427b460f, type: 3}
   useLightingScene: 1
@@ -26,87 +26,87 @@ MonoBehaviour:
   lightingScenes:
   - Name: DefaultLightingScene
     Path: Assets/MRTK/Services/SceneSystem/SceneSystemResources/DefaultLightingScene.unity
-    Included: 1
-    BuildIndex: 19
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 7e54e36c44f826c438c95da79f8de638, type: 3}
   contentScenes:
   - Name: '#2_Time-basedGazeInput'
     Path: Assets/Scenes/#2_Time-basedGazeInput.unity
-    Included: 1
-    BuildIndex: 2
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: d13aeb7b2047320408787cbeace1745e, type: 3}
   - Name: '#3_Head-tiltInput'
     Path: Assets/Scenes/#3_Head-tiltInput.unity
-    Included: 1
-    BuildIndex: 3
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: a63383a00fbe1b047ac9e2e5295b12b0, type: 3}
   - Name: '#4_HandInBoxInput'
     Path: Assets/Scenes/#4_HandInBoxInput.unity
-    Included: 1
-    BuildIndex: 4
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 715093ed1dcc39a4d9908377c93e06dc, type: 3}
   - Name: '#7_VoiceCommandsAsInput'
     Path: Assets/Scenes/#7_VoiceCommandsAsInput.unity
-    Included: 1
-    BuildIndex: 9
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: e174be8cb1a38d24c9adaedbfbb3c25b, type: 3}
   - Name: '#11_Top-downView+Front-viewOfRack'
     Path: Assets/Scenes/#11_Top-downView+Front-viewOfRack.unity
-    Included: 1
-    BuildIndex: 10
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 92bd1994864022745b3b0c0ed2e6fc82, type: 3}
   - Name: '#12_CurrentSystemApproachPortedOver'
     Path: Assets/Scenes/#12_CurrentSystemApproachPortedOver.unity
-    Included: 1
-    BuildIndex: 11
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 4ea7691e8979c6f4597d087b29148a64, type: 3}
   - Name: '#14_ScanWithTextFeedback'
     Path: Assets/Scenes/#14_ScanWithTextFeedback.unity
-    Included: 1
-    BuildIndex: 12
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 0f817d7866475e24aaf59be1a153b5fa, type: 3}
   - Name: '#14.1_ScanOnlyVisualFeedback'
     Path: Assets/Scenes/#14.1_ScanOnlyVisualFeedback.unity
-    Included: 1
-    BuildIndex: 13
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 29b6ef3a090520142b174033aa265058, type: 3}
   - Name: '#15_SoundFeedbackOnScan'
     Path: Assets/Scenes/#15_SoundFeedbackOnScan.unity
-    Included: 1
-    BuildIndex: 14
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 113a5c0468daae24fbaec16ff9474289, type: 3}
   - Name: '#18_GazeGestureToSelectItemFromList'
     Path: Assets/Scenes/#18_GazeGestureToSelectItemFromList.unity
-    Included: 1
-    BuildIndex: 15
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: b4147922623e24f409f4f91bedefd40c, type: 3}
   - Name: '#19_PinchGestureToSelectItemFromList'
     Path: Assets/Scenes/#19_PinchGestureToSelectItemFromList.unity
-    Included: 1
-    BuildIndex: 16
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 5c5a03b184d97d14a8f63f423920eb87, type: 3}
   - Name: '#16_SwipeGesture'
     Path: Assets/Scenes/#16_SwipeGesture.unity
-    Included: 1
-    BuildIndex: 17
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: e52d8e773dd3a4a4cbaddde9242e1635, type: 3}
   - Name: '#21_FramingScene'
     Path: Assets/Scenes/#21_FramingScene.unity
-    Included: 1
-    BuildIndex: 18
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 16e1cc32cddbc004dbd567499a1a4bd0, type: 3}
   permittedLightingSceneComponentTypes:

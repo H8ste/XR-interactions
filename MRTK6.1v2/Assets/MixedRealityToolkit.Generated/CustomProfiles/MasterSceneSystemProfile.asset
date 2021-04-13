@@ -17,8 +17,8 @@ MonoBehaviour:
   managerScene:
     Name: ManagerScene
     Path: Assets/Scenes/ManagerScene.unity
-    Included: 1
-    BuildIndex: 0
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 96c54956c1e510745bf18afe427b460f, type: 3}
   useLightingScene: 0
@@ -33,34 +33,34 @@ MonoBehaviour:
   contentScenes:
   - Name: Scrolling=Head;Selection=Clicker
     Path: Assets/Scenes/Scrolling=Head;Selection=Clicker.unity
-    Included: 1
-    BuildIndex: 1
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 9ed5dffab5b7dec4f8022e34bec7de56, type: 3}
   - Name: Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker (Horizontal)
     Path: Assets/Scenes/Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker
       (Horizontal).unity
-    Included: 1
-    BuildIndex: 5
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: b64707e49eb592346864b3fa9d5f2fd3, type: 3}
   - Name: Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker (Vertical)
     Path: Assets/Scenes/Scrolling=FingerHold-ClickerHold;Selection=Finger-Clicker
       (Vertical).unity
-    Included: 1
-    BuildIndex: 6
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: c37b04ee060f0fa4abdc075f99b06e81, type: 3}
   - Name: Prompt=HeadTilt
     Path: Assets/Scenes/Prompt=HeadTilt.unity
-    Included: 1
-    BuildIndex: 7
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 81f2aef23782e1c4da7fcd15e3217418, type: 3}
   - Name: Prompt=ClickerTap
     Path: Assets/Scenes/Prompt=ClickerTap.unity
-    Included: 1
-    BuildIndex: 8
+    Included: 0
+    BuildIndex: -1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: a967c5c0934c5ea4f95e8f562453d5fe, type: 3}
   permittedLightingSceneComponentTypes:

@@ -5,6 +5,17 @@ TagManager:
   serializedVersion: 2
   tags:
   - IndexFingerCollider
+<<<<<<< HEAD
+=======
+  - SwipeGesture
+  - SelectionPosition
+  - CurrentDisplay
+  - NextDisplay
+  - Amount
+  - ItemName
+  - LocPK
+  - OptionText
+>>>>>>> main
   layers:
   - Default
   - TransparentFX

@@ -2,66 +2,44 @@
 
 public class PositionSelectionPosition : MonoBehaviour
 {
+    // reference to scrollHandler that contains selected scrollableItem
+    private ScrollHandler scrollHandlerReference;
 
-    private GameObject selectionPositionReference;
-    private GazeGesture gazeScriptReference;
-
-
+    // a reference to the position of the pointer in its horizontal state - set in unityinspector
     [SerializeField]
     private Transform horizontalPos;
+
+    // a reference to the position of the pointer in its vetical state - set in unityinspector
     [SerializeField]
     private Transform verticalPos;
 
-    private bool oldIsHorizontal;
 
+    /* Unity Methods */
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        selectionPositionReference = FindChildWithTag("SelectionPosition", transform);
-        gazeScriptReference = transform.GetComponentInParent<GazeGesture>();
+        // find scrollHandler in parent
+        scrollHandlerReference = transform.GetComponentInParent<ScrollHandler>();
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    private void Update()
     {
-        //if (gazeScriptReference.IsHorizontal != oldIsHorizontal)
-        //{
-            switch (gazeScriptReference.IsHorizontal)
+        var child = Helper.FindChildWithTag(scrollHandlerReference?.PreviousHitScrollableItem?.gameObject, "SelectionPosition");
+        if (child)
+        {
+            switch (scrollHandlerReference.IsHorizontal)
             {
+                // based on scrollHandlerState, position pointer horizontally/vertically
                 case true:
-                    selectionPositionReference.transform.localPosition = horizontalPos.localPosition;
-                    selectionPositionReference.transform.localRotation = horizontalPos.localRotation;
+                    child.transform.localPosition = horizontalPos.localPosition;
+                    child.transform.localRotation = horizontalPos.localRotation;
                     break;
 
                 case false:
-                    selectionPositionReference.transform.localPosition = verticalPos.localPosition;
-                    selectionPositionReference.transform.localRotation = verticalPos.localRotation;
+                    child.transform.localPosition = verticalPos.localPosition;
+                    child.transform.localRotation = verticalPos.localRotation;
                     break;
             }
-        //}
-
-
-        //oldIsHorizontal = gazeScriptReference.IsHorizontal;
-
-
-    }
-
-
-    public GameObject FindChildWithTag(string tag, Transform parent)
-    {
-
-
-        foreach (Transform child in parent)
-        {
-            //Debug.Log(tag + " == " + child.tag);
-            if (child.tag == tag)
-            {
-                //Debug.Log("found child");
-                return child.gameObject;
-            }
         }
-        return null;
     }
-
 }

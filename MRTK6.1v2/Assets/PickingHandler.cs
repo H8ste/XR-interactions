@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,7 +15,11 @@ public class PickingHandler : MonoBehaviour, ITab
     ScanFeedback scanFeedback;
     private PromptHandler promptHandler;
     PromptType promptType;
-
+    OrderItem current;
+    OrderItem next;
+    //How do we actually access the instance of dataHandler? 
+    [SerializeField]
+    DataHandler dataHandler;
 
     private RawImage scanImage;
 
@@ -29,31 +34,59 @@ public class PickingHandler : MonoBehaviour, ITab
     {
 
     }
-
-    public async Task<bool> PickItemHandler(OrderItem activePick, OrderItem nextPick)
-    {
-        Enable();
-
-        currentDisplay.SetInformation(activePick);
-        nextDisplay.SetInformation(nextPick);
-
-
-        return true;
-    }
-    public void UpdatePickItems(OrderItem newActivePick, OrderItem newNextPick)
-    {
-        //Current  is done
-        //Set new
-        currentDisplay.SetInformation(newActivePick);
-        nextDisplay.SetInformation(newNextPick);
-    }
-
+    /// <summary>
+    /// Called when the picking handler tab is switched to. 
+    /// </summary>
     public void Enable()
     {
+
+        BeginNewPick();
+
+        
+    }
+    /// <summary>
+    /// Starts a new pick and spawns information displays with info corresponding to the current order items
+    /// </summary>
+    /// <returns></returns>
+    public void BeginNewPick()
+    {
         promptHandler = promptHandler ?? gameObject.AddComponent<PromptHandler>();
-
+        
         PrintLabelPrompt();
+        InstantiateDisplay();
 
+        SetDisplayInfo();
+
+        
+    }
+    /// <summary>
+    /// Called when the picking handler tab is switched away from
+    /// </summary>
+    public void Disable()
+    {
+        Destroy(displayObject.gameObject);
+        Destroy(scanFeedback);
+        Destroy(promptHandler);
+    }
+    /// <summary>
+    /// Sets the information on the displays to the current and next orderItem respectively
+    /// </summary>
+    private void SetDisplayInfo()
+    {
+        var currentPick = dataHandler.SelectedItem;
+        currentDisplay.SetInformation(currentPick);
+
+        //Finds the index of the current orderitem from the DataHandler and sets the other display to the next item in the list.
+        nextDisplay.SetInformation(dataHandler.AllOrderItems[dataHandler.SelectedItemIndex +1]);
+
+    }
+
+
+    /// <summary>
+    /// Instantiates the display holder object and the current/next display objects
+    /// </summary>
+    private void InstantiateDisplay()
+    {
         displayObject = Instantiate(displayHolder);
 
         currentDisplayObject = Helper.FindChildWithTag(displayObject, "CurrentDisplay");
@@ -61,12 +94,6 @@ public class PickingHandler : MonoBehaviour, ITab
 
         currentDisplay = currentDisplayObject.GetComponent<Display>();
         nextDisplay = nextDisplayObject.GetComponent<Display>();
-
-    }
-    public void Disable()
-    {
-        Destroy(displayObject.gameObject);
-        Destroy(scanFeedback);
     }
 
     public ITab Construct(DataHandler dataHandler)
@@ -93,12 +120,12 @@ public class PickingHandler : MonoBehaviour, ITab
     private async void OnConfirm()
     {
         //When the user has confirmed the current/active pick. 
-        //Check if the correct item has been scanned? 
+        //Check if the correct item has been scanned?
         var selection = await promptHandler.ShowPrompt(PromptType.ConfirmOrder);
         if (selection == 0)
         {
 
-           
+            //SetDisplayInfo
         }
         else
         {

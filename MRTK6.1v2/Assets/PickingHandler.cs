@@ -17,9 +17,6 @@ public class PickingHandler : MonoBehaviour, ITab
     PromptType promptType;
     OrderItem current;
     OrderItem next;
-    //How do we actually access the instance of dataHandler? 
-    [SerializeField]
-    DataHandler dataHandler;
 
     private RawImage scanImage;
 

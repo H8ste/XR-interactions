@@ -24,6 +24,7 @@ public class CameraAccess : MonoBehaviour
     int fpsCounter = 0;
 
     string[] result;
+    public string[] Result { get { return result; } }
 
     int m_frameCounter = 0;
     float m_timeCounter = 0.0f;
@@ -51,11 +52,11 @@ public class CameraAccess : MonoBehaviour
         {
             var printableResult = string.Join(", ", result);
             print("QR CODES : " + printableResult);
-            textRef.text = printableResult;
+            if (textRef != null) textRef.text = printableResult;
         }
         else
         {
-            textRef.text = "Found no QR Codes";
+            if (textRef != null) textRef.text = "Found no QR Codes";
         }
     }
 

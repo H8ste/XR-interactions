@@ -45,7 +45,7 @@ public class TabHandler : MonoBehaviour
 
         if (EditorApplication.isPlaying) PrintDictionary(AllTabs);
 
-        StartTab(beginningTab);
+        //StartTab(beginningTab);
 
         return this;
     }
@@ -117,13 +117,13 @@ public class TabHandler : MonoBehaviour
                 return gameObject.AddComponent<ManualOrderPickHandler>().Construct(dataHandler);
 
             case TabType.OffloadHandler:
-                throw new Exception("Appropriate tabHandler for OffloadHandler has not been set in TabHandler.cs");
+                //throw new Exception("Appropriate tabHandler for OffloadHandler has not been set in TabHandler.cs");
 
                 return null;
                 break;
 
             case TabType.RestockHandler:
-                throw new Exception("Appropriate tabHandler for RestockHandler has not been set in TabHandler.cs");
+                //throw new Exception("Appropriate tabHandler for RestockHandler has not been set in TabHandler.cs");
 
                 return null;
                 break;

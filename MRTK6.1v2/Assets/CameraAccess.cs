@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using Vuforia;
 using System.Diagnostics;
+using System.Linq;
+using System;
 
 public class CameraAccess : MonoBehaviour
 {
@@ -22,8 +24,11 @@ public class CameraAccess : MonoBehaviour
     Thread parseThread = null;
 
     int fpsCounter = 0;
+    
+
 
     string[] result;
+    public string[] Result { get { return result; } }
 
     int m_frameCounter = 0;
     float m_timeCounter = 0.0f;
@@ -50,7 +55,7 @@ public class CameraAccess : MonoBehaviour
         if (result != null)
         {
             var printableResult = string.Join(", ", result);
-            print("QR CODES : " + printableResult);
+          //print("QR CODES : " + printableResult);
             textRef.text = printableResult;
         }
         else
@@ -159,8 +164,13 @@ public class CameraAccess : MonoBehaviour
     void FindAndDecodeQR(byte[] pixels, int imageWidth, int imageHeight, ZXing.RGBLuminanceSource.BitmapFormat format)
     {
         Stopwatch stopWatch = Stopwatch.StartNew();
-        result = parser.DecodeMultiple(pixels, imageWidth, imageHeight, format);
+        result = parser.DecodeMultiple(pixels, imageWidth, imageHeight, format).Select(item => String.Join(",", item.ResultPoints.Select(innerItem => innerItem.X + " : " + innerItem.Y))).ToArray();
         //UnityEngine.Debug.Log(stopWatch.ElapsedMilliseconds + ":" + pixels.Length);
+        foreach (var item in result)
+        {
+           // print(item);
+        }
+
         stopWatch.Stop();
         return;
     }

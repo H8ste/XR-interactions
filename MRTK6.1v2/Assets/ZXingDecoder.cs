@@ -19,7 +19,30 @@ public class ZXingDecoder : IDecoder
         };
     }
 
-    public string[] DecodeMultiple(byte[] rawRgb, int width, int height, RGBLuminanceSource.BitmapFormat format)
+    //public string[] DecodeMultiple(byte[] rawRgb, int width, int height, RGBLuminanceSource.BitmapFormat format)
+    //{
+    //    if (rawRgb == null || rawRgb.Length == 0 || width == 0 || height == 0)
+    //    {
+    //        return null;
+    //    }
+
+
+    //    string[] returnValue = null;
+
+    //    try
+    //    {
+    //        var result = Scanner.DecodeMultiple(rawRgb, width, height, format);
+    //        returnValue = result?.Select(item => item.Text).ToArray();
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        Debug.LogError(e);
+    //    }
+
+
+    //    return returnValue;
+    //}
+    public Result[] DecodeMultiple(byte[] rawRgb, int width, int height, RGBLuminanceSource.BitmapFormat format)
     {
         if (rawRgb == null || rawRgb.Length == 0 || width == 0 || height == 0)
         {
@@ -27,12 +50,12 @@ public class ZXingDecoder : IDecoder
         }
 
 
-        string[] returnValue = null;
+        Result[] returnValue = null;
 
         try
         {
             var result = Scanner.DecodeMultiple(rawRgb, width, height, format);
-            returnValue = result?.Select(item => item.Text).ToArray();
+            returnValue = result;
         }
         catch (Exception e)
         {

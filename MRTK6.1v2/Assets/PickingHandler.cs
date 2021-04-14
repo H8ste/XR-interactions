@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PickingHandler : MonoBehaviour, ITab
 {
-    DisplayInformationHandler displayInformationHandler;
     Display currentDisplay;
     Display nextDisplay;
     GameObject displayObject;
@@ -14,11 +12,10 @@ public class PickingHandler : MonoBehaviour, ITab
     GameObject displayHolder;
     ScanFeedback scanFeedback;
     private PromptHandler promptHandler;
-    PromptType promptType;
-    OrderItem current;
-    OrderItem next;
 
-    private RawImage scanImage;
+    private float clickTime = 1;
+
+    CameraAccess qrHandler;
 
     DataHandler dataHandler;
 
@@ -29,7 +26,8 @@ public class PickingHandler : MonoBehaviour, ITab
 
     void Update()
     {
-
+        BeginScan();
+        OnScan();
     }
     /// <summary>
     /// Called when the picking handler tab is switched to. 
@@ -39,7 +37,6 @@ public class PickingHandler : MonoBehaviour, ITab
 
         BeginNewPick();
 
-        
     }
     /// <summary>
     /// Starts a new pick and spawns information displays with info corresponding to the current order items
@@ -48,13 +45,13 @@ public class PickingHandler : MonoBehaviour, ITab
     public void BeginNewPick()
     {
         promptHandler = promptHandler ?? gameObject.AddComponent<PromptHandler>();
-        
+
         PrintLabelPrompt();
         InstantiateDisplay();
 
         SetDisplayInfo();
 
-        
+
     }
     /// <summary>
     /// Called when the picking handler tab is switched away from
@@ -74,7 +71,7 @@ public class PickingHandler : MonoBehaviour, ITab
         currentDisplay.SetInformation(currentPick);
 
         //Finds the index of the current orderitem from the DataHandler and sets the other display to the next item in the list.
-        nextDisplay.SetInformation(dataHandler.AllOrderItems[dataHandler.SelectedItemIndex +1]);
+        nextDisplay.SetInformation(dataHandler.AllOrderItems[dataHandler.SelectedItemIndex + 1]);
 
     }
 
@@ -103,6 +100,21 @@ public class PickingHandler : MonoBehaviour, ITab
 
     private void OnScan()
     {
+        if (qrHandler.Result != null && qrHandler.Result.Any() && IsCorrectScan(qrHandler.Result.First()))
+        {
+            //Correct Item has been scanned
+            //print("You are scanning an QR code");
+            foreach (var elm in qrHandler.Result)
+            {
+                //Render a sprite at each point
+                print("These are coordinates: " + elm);
+
+            }
+            //find largest distance between two points
+            //take half of that distance vector
+            //Spawn stuff there
+        }
+
         var correctTex = Resources.Load<Texture>("Images/Correct");
         var inCorrectTex = Resources.Load<Texture>("Images/Incorrect");
         var img = currentDisplayObject.GetComponentInChildren<RawImage>();
@@ -114,6 +126,28 @@ public class PickingHandler : MonoBehaviour, ITab
         //If it is not correct
         scanFeedback = new ScanFeedback(false, correctTex, inCorrectTex, img);
     }
+
+    public void BeginScan()
+    {
+        qrHandler = qrHandler ?? gameObject.AddComponent<CameraAccess>();
+    }
+
+    private void EndScan()
+    {
+        Debug.Log("Ending scan");
+        Destroy(qrHandler);
+        qrHandler = null;
+    }
+
+    private bool IsCorrectScan(string parsedQRCode)
+    {
+        if (true) //If the parsed QRcode is = item from API Handler
+        {
+            return true;
+        }
+        return false;
+    }
+
     private async void OnConfirm()
     {
         //When the user has confirmed the current/active pick. 
@@ -145,5 +179,5 @@ public class PickingHandler : MonoBehaviour, ITab
         }
     }
 
-  
+
 }

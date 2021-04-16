@@ -8,8 +8,10 @@ public class StateHandler : MonoBehaviour
 
     DataHandler dataHandler;
     TabHandler tabHandler;
+    LoginHandler loginHandler;
 
     StateType currentState = StateType.Login;
+    public StateType CurrentState { get { return currentState; } set { currentState = value; } }
 
     void Start()
     {
@@ -22,17 +24,18 @@ public class StateHandler : MonoBehaviour
         this.tabHandler = gameObject.AddComponent<TabHandler>().Instantiate(dataHandler);
 
         // instantiate loginHandler -- then wait for login
-
-
+        this.loginHandler = gameObject.AddComponent<LoginHandler>();
+        this.loginHandler.Instantiate(this);
+        this.loginHandler.LoginEvent.AddListener(OnLogin);
+        this.loginHandler.BeginLogin();
     }
 
     void OnLogin()
     {
+        Debug.Log("Logged in!");
         currentState = StateType.Play;
 
         dataHandler.FetchRoundInfo();
-
-        currentState = StateType.Play;
 
         tabHandler.SwitchTab(TabType.PickingHandler);
     }

@@ -1,7 +1,6 @@
 ﻿using Assets.Scripts.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using ZXing;
 
@@ -9,6 +8,7 @@ public class ZXingDecoder : IDecoder
 {
     private BarcodeReader Scanner { get; }
 
+    /* CTor */
     public ZXingDecoder()
     {
         Scanner = new BarcodeReader
@@ -19,54 +19,82 @@ public class ZXingDecoder : IDecoder
         };
     }
 
-    public string[] DecodeMultiple(byte[] rawRgb, int width, int height, RGBLuminanceSource.BitmapFormat format)
+    /* Public Methods */
+
+    /// <summary>
+    /// Using passed image, finds and returns decoded QR codes as Result objects
+    /// </summary>
+    /// <param name="image">Image to decode</param>
+    /// <param name="width">width of image</param>
+    /// <param name="height">height of image</param>
+    /// <param name="format">Format of image</param>
+    /// <return>An array of QR codes as a result object</return>
+    public Result[] DecodeMultiple(byte[] image, int width, int height, RGBLuminanceSource.BitmapFormat format)
     {
-        if (rawRgb == null || rawRgb.Length == 0 || width == 0 || height == 0)
+        if (!ValidImage(image, width, height))
         {
             return null;
         }
 
-
-        string[] returnValue = null;
-
+        Result[] returnValue = null;
         try
         {
-            var result = Scanner.DecodeMultiple(rawRgb, width, height, format);
-            returnValue = result?.Select(item => item.Text).ToArray();
+            returnValue = Scanner.DecodeMultiple(image, width, height, format);
         }
         catch (Exception e)
         {
             Debug.LogError(e);
         }
 
+        return returnValue;
+    }
+    
+    /// <summary>
+    /// Using passed image, finds and returns a QR code as a result object
+    /// </summary>
+    /// <param name="image">Image to decode</param>
+    /// <param name="width">width of image</param>
+    /// <param name="height">height of image</param>
+    /// <return>An QR code as a result object</return>
+    public Result DecodeSingle(Color32[] image, int width, int height)
+    {
+        if (!ValidImage(image, width, height))
+        {
+            return null;
+        }
+
+        Result returnValue = null;
+
+        try
+        {
+            returnValue = Scanner.Decode(image, width, height);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
 
         return returnValue;
     }
 
-    public string Decode(Color32[] colors, int width, int height)
+    /* Private Methods */
+    bool ValidImage(Color32[] image, int width, int height)
     {
-        if (colors == null || colors.Length == 0 || width == 0 || height == 0)
+        if (image == null || image.Length == 0 || width == 0 || height == 0)
         {
-            return null;
+            return false;
         }
 
-        string value = null;
+        return true;
+    }
 
-        try
+    bool ValidImage(byte[] image, int width, int height)
+    {
+        if (image == null || image.Length == 0 || width == 0 || height == 0)
         {
-            //Scanner.DecodeMultiple()
-            var result = Scanner.Decode(colors, width, height);
-
-            if (result != null)
-            {
-                value = result.Text;
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
+            return false;
         }
 
-        return value;
+        return true;
     }
 }

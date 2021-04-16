@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class StateHandler : MonoBehaviour
 {
-    // Start is called before the first frame update
-
     DataHandler dataHandler;
     TabHandler tabHandler;
     LoginHandler loginHandler;
@@ -16,23 +14,21 @@ public class StateHandler : MonoBehaviour
     void Start()
     {
         // instantiate apiHandler
-
+        
         // instantiate datahandler
-        this.dataHandler = new DataHandler( /* apiHandler */);
+        this.dataHandler = new DataHandler(/* apiHandler */);
 
         // instantiate tabhandler
         this.tabHandler = gameObject.AddComponent<TabHandler>().Instantiate(dataHandler);
 
         // instantiate loginHandler -- then wait for login
-        this.loginHandler = gameObject.AddComponent<LoginHandler>();
-        this.loginHandler.Instantiate(this);
+        this.loginHandler = gameObject.AddComponent<LoginHandler>().Instantiate(this);
         this.loginHandler.LoginEvent.AddListener(OnLogin);
         this.loginHandler.BeginLogin();
     }
 
     void OnLogin()
     {
-        Debug.Log("Logged in!");
         currentState = StateType.Play;
 
         dataHandler.FetchRoundInfo();

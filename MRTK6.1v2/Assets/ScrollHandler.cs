@@ -2,7 +2,6 @@ using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.UI;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Linq;
@@ -78,7 +77,7 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     public Interactable PreviousHitScrollableItem { get { return previousHitScrollableItem; } private set { previousHitScrollableItem = value; } }
 
 
-    /* Unity MonoBehaviour Methods */
+    /* Unity Methods */
 
     /// <summary>
     /// Update runs once per frame
@@ -138,10 +137,10 @@ public class ScrollHandler : MonoBehaviour, IMixedRealityInputActionHandler
     /* Public Methods */
 
     /// <summary>
-    /// Initialise the scrollHandler with passed scrollableItems
+    /// Instantiates the scrollHandler with passed scrollableItems
     /// </summary>
     /// <param name="scrollableItems">A set of scrollableItems to be handled/rendered by the initialised ScrollHandler</param>
-    public ScrollHandler Init(IScrollableItem[] scrollableItems)
+    public ScrollHandler Instantiate(IScrollableItem[] scrollableItems)
     {
         SelectionPrefab = Resources.Load("Prefabs/SelectionPointer", typeof(GameObject)) as GameObject;
         if (!SelectionPrefab)

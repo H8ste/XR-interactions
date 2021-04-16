@@ -1,14 +1,21 @@
 ﻿using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 using Vuforia;
 using System.Diagnostics;
+using System.Linq;
+using ZXing;
 
-public class CameraAccess : MonoBehaviour
+public class QRProvider : MonoBehaviour
 {
-    [SerializeField]
-    TextMesh textRef;
+    /* Accessible properties */
+    public ResultPoint[][] QrCodesAsResultPoints { get { return result?.Select(qrCode => qrCode.ResultPoints).ToArray(); } }
+    public string[] QrCodesAsStrings { get { return result?.Select(qrCode => qrCode.Text).ToArray(); } }
 
+    Result[] result;
+    public Result[] Result { get { return result; } }
+
+
+    /* Vuforia Camera Properties */
     private bool mAccessCameraImage = true;
 
     // The desired camera image pixel format
@@ -17,40 +24,46 @@ public class CameraAccess : MonoBehaviour
     // Boolean flag telling whether the pixel format has been registered
     private bool mFormatRegistered = false;
 
-    RawImage shownImage;
 
-    Thread parseThread = null;
-
+    /* FrameRate properties */
     int fpsCounter = 0;
-
-    string[] result;
-    public string[] Result { get { return result; } }
-
     int m_frameCounter = 0;
     float m_timeCounter = 0.0f;
     float m_lastFramerate = 0.0f;
+    
     [SerializeField]
     float m_refreshTime = 0.5f;
 
 
+    /* Decoder properties */
+    ZXingDecoder decoder;
+    Thread decodeThread = null;
 
-    ZXingDecoder parser;
-    void Start()
+
+    /* Debugging purporses */
+    [SerializeField]
+    TextMesh textRef;
+
+    /* CTor */
+    public QRProvider Instantiate()
     {
         // Register Vuforia life-cycle callbacks:
-
         VuforiaARController.Instance.RegisterVuforiaStartedCallback(OnVuforiaStarted);
         VuforiaARController.Instance.RegisterOnPauseCallback(OnPause);
         VuforiaARController.Instance.RegisterTrackablesUpdatedCallback(OnTrackablesUpdated);
 
-        parser = new ZXingDecoder();
+        // Instantiate decoder
+        decoder = new ZXingDecoder();
+
+        return this;
     }
 
+    /* Unity Methods */
     private void Update()
     {
         if (result != null)
         {
-            var printableResult = string.Join(", ", result);
+            var printableResult = string.Join(", ", QrCodesAsStrings);
             print("QR CODES : " + printableResult);
             if (textRef != null) textRef.text = printableResult;
         }
@@ -60,7 +73,7 @@ public class CameraAccess : MonoBehaviour
         }
     }
 
-
+    /* Private Methods */
     /// <summary>
     /// Called when Vuforia is started
     /// </summary>
@@ -80,6 +93,7 @@ public class CameraAccess : MonoBehaviour
             mFormatRegistered = false;
         }
     }
+
     /// <summary>
     /// Called when app is paused / resumed
     /// </summary>
@@ -97,14 +111,11 @@ public class CameraAccess : MonoBehaviour
         }
     }
 
-
-
     /// <summary>
     /// Called each time the Vuforia state is updated
     /// </summary>
     private void OnTrackablesUpdated()
     {
-
         if (mFormatRegistered && fpsCounter > m_lastFramerate / 3 && m_lastFramerate > 30)
         {
             fpsCounter = 0;
@@ -114,61 +125,41 @@ public class CameraAccess : MonoBehaviour
                 if (image != null)
                 {
                     byte[] pixels = image.Pixels;
-
-                    if (parseThread != null)
+                    if (decodeThread != null)
                     {
-                        parseThread.Abort();
-                        parseThread = null;
+                        // if a decode is already running, abort said decode
+                        decodeThread.Abort();
+                        decodeThread = null;
                     }
                     else
                     {
-                        string imageInfo = mPixelFormat + " image: \n";
-                        imageInfo += " size: " + image.Width + " x " + image.Height + "\n";
-                        imageInfo += " bufferSize: " + image.BufferWidth + " x " + image.BufferHeight + "\n";
-                        imageInfo += " stride: " + image.Stride;
-                        //UnityEngine.Debug.Log(imageInfo);
-
+                        // start new decode thread
                         // if fps issues arise, might need to look into decode a subset of the given pixels
-                        //int startIndex = (int)(Mathf.FloorToInt((1f / 5f) * image.Width) + (((1f / 5f) * image.Height) * image.Width));
-                        //var endIndex = pixels.Length - startIndex;
-                        //UnityEngine.Debug.Log("startIndex: " + startIndex + ". endIndex: " + endIndex + ". % saved: " + (100 - ((endIndex - startIndex) / pixels.Length) * 100));
-                        //byte[] newArr = new byte[endIndex-startIndex];
-                        //Array.Copy(pixels, startIndex, newArr, 0, endIndex - startIndex);
-
-                        //parseThread = new Thread(() => FindAndDecodeQR(pixels, image.Width, image.Height, ZXing.RGBLuminanceSource.BitmapFormat.Gray8));
-                        parseThread = new Thread(() => FindAndDecodeQR(pixels , image.Width, image.Height, ZXing.RGBLuminanceSource.BitmapFormat.Gray8));
-                        parseThread.Start();
-                    }
-
-
-
-                    if (pixels != null && pixels.Length > 0)
-                    {
-                        //UnityEngine.Debug.Log("Image pixels: " + pixels[0] + "," + pixels[1] + "," + pixels[2] + ",...");
+                        decodeThread = new Thread(() => FindAndDecodeQR(pixels, image.Width, image.Height, ZXing.RGBLuminanceSource.BitmapFormat.Gray8));
+                        decodeThread.Start();
                     }
                 }
             }
         }
 
-        fpsCounter++;
-
-        RecordFrameRate();
+        TrackFrameRate();
     }
-
-
 
     void FindAndDecodeQR(byte[] pixels, int imageWidth, int imageHeight, ZXing.RGBLuminanceSource.BitmapFormat format)
     {
-        Stopwatch stopWatch = Stopwatch.StartNew();
-        result = parser.DecodeMultiple(pixels, imageWidth, imageHeight, format);
-        //UnityEngine.Debug.Log(stopWatch.ElapsedMilliseconds + ":" + pixels.Length);
-        stopWatch.Stop();
-        return;
+        Stopwatch decodeStopWatch = Stopwatch.StartNew();
+
+        result = decoder.DecodeMultiple(pixels, imageWidth, imageHeight, format);
+
+        decodeStopWatch.Stop();
+        UnityEngine.Debug.Log($"Decoded {result.Length} qrCodes in {decodeStopWatch.ElapsedMilliseconds} milliseconds");
     }
 
-
-    void RecordFrameRate()
+    // records the current frames per second - used to limit amount of qr-decodes are run pr second
+    void TrackFrameRate()
     {
+        fpsCounter++;
+
         if (m_timeCounter < m_refreshTime)
         {
             m_timeCounter += Time.deltaTime;
@@ -176,7 +167,6 @@ public class CameraAccess : MonoBehaviour
         }
         else
         {
-            //This code will break if you set your m_refreshTime to 0, which makes no sense.
             m_lastFramerate = (float)m_frameCounter / m_timeCounter;
             m_frameCounter = 0;
             m_timeCounter = 0.0f;
@@ -192,6 +182,7 @@ public class CameraAccess : MonoBehaviour
         CameraDevice.Instance.SetFrameFormat(mPixelFormat, false);
         mFormatRegistered = false;
     }
+
     /// <summary>
     /// Register the camera pixel format
     /// </summary>

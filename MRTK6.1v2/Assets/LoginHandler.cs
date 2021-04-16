@@ -3,13 +3,14 @@ using UnityEngine;
 
 public class LoginHandler : MonoBehaviour
 {
-
-    OnLogin loginEvent = new OnLogin();
-    CameraAccess qrHandler;
+    QRProvider qrProvider;
     StateHandler stateHandler;
-
+    
+    OnLogin loginEvent = new OnLogin();
     public OnLogin LoginEvent { get { return loginEvent; } }
+    
 
+    /* CTor */
     public LoginHandler Instantiate(StateHandler stateHandler)
     {
         this.stateHandler = stateHandler;
@@ -17,15 +18,15 @@ public class LoginHandler : MonoBehaviour
         return this;
     }
 
-    // Update is called once per frame
+
+    /* Unity Methods */
     void Update()
     {
         if (stateHandler?.CurrentState == StateType.Login)
         {
-            if (qrHandler.Result != null && qrHandler.Result.Any() && IsValidLogin(qrHandler.Result.First()))
+            if (qrProvider.QrCodesAsStrings != null && qrProvider.QrCodesAsStrings.Any() && IsValidLogin(qrProvider.QrCodesAsStrings.First()))
             {
                 // login was valid
-
                 EndLogin();
 
                 loginEvent.Invoke();
@@ -33,6 +34,16 @@ public class LoginHandler : MonoBehaviour
         }
     }
 
+
+    /* Public Methods */
+    public void BeginLogin()
+    {
+        // begin cameraAcess etc.
+        qrProvider = qrProvider ?? gameObject.AddComponent<QRProvider>().Instantiate();
+    }
+
+
+    /* Private Methods */
     private bool IsValidLogin(string parsedQRCode)
     {
         if (parsedQRCode.Contains('@'))
@@ -40,33 +51,23 @@ public class LoginHandler : MonoBehaviour
             var splitQRCode = parsedQRCode.Split('@');
             if (splitQRCode.Length == 2)
             {
-                if (splitQRCode[0].Contains('/') && short.TryParse(splitQRCode[1],out short roundNo))
+                if (splitQRCode[0].Contains('/') && short.TryParse(splitQRCode[1], out short roundNo))
                 {
                     Debug.Log("user: " + splitQRCode[0] + ". roundNo: " + roundNo);
+
+                    // should also, through apiHandler, ensure correct login
                     return true;
                 }
             }
         }
 
         return false;
-      
-    }
-
-    public void BeginLogin()
-    {
-        // begin cameraAcess etc.
-        qrHandler = qrHandler ?? gameObject.AddComponent<CameraAccess>();
     }
 
     private void EndLogin()
     {
-        Debug.Log("Ending login");
-        // end cameraAcess etc.
-        Destroy(qrHandler);
-        qrHandler = null;
+        // end qrProvider etc.
+        Destroy(qrProvider);
+        qrProvider = null;
     }
-
-
-
-
 }

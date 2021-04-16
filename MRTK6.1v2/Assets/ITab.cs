@@ -1,6 +1,6 @@
 ﻿public interface ITab
 {
-    ITab Construct(DataHandler dataHandler);
+    ITab Instantiate(DataHandler dataHandler);
     void Enable();
     void Disable();
 }

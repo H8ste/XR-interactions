@@ -24,8 +24,7 @@ public class PositionSelectionPosition : MonoBehaviour
     
     private void Update()
     {
-        var child = Helper.FindChildWithTag(scrollHandlerReference?.PreviousHitScrollableItem?.gameObject, "SelectionPosition");
-        if (child)
+        if (Helper.FindChildWithTag(scrollHandlerReference?.PreviousHitScrollableItem?.gameObject, "SelectionPosition", out var child))
         {
             switch (scrollHandlerReference.IsHorizontal)
             {

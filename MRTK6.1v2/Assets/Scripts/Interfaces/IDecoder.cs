@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using ZXing;
 
 namespace Assets.Scripts.Interfaces
 {
     public interface IDecoder
     {
-        string Decode(Color32[] colors, int width, int height);
+        Result[] DecodeMultiple(byte[] rawRgb, int width, int height, RGBLuminanceSource.BitmapFormat format);
+        Result DecodeSingle(Color32[] colors, int width, int height);
     }
 }
 

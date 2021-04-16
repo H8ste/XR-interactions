@@ -45,12 +45,12 @@ public class TabHandler : MonoBehaviour
 
         if (EditorApplication.isPlaying) PrintDictionary(AllTabs);
 
-        //StartTab(beginningTab);
-
         return this;
     }
 
+
     /* Public Methods */
+
     /// <summary>
     /// Used to start given TabType
     /// </summary>
@@ -63,13 +63,11 @@ public class TabHandler : MonoBehaviour
         }
     }
 
-    /* Private Methods */
-
     /// <summary>
-    /// Used to handle the enabling/disabling of new and previous states
+    /// Used to handle the enabling/disabling of new and previous tab
     /// </summary>
-    /// <param name="newTab">the state to switch to</param>
-    private void SwitchTab(ITab newTab)
+    /// <param name="newTab">the tab to switch to</param>
+    public void SwitchTab(ITab newTab)
     {
         // disable previous state
         previousTab?.Disable();
@@ -81,6 +79,10 @@ public class TabHandler : MonoBehaviour
         ActiveTab?.Enable();
     }
 
+    /// <summary>
+    /// Used to handle the enabling/disabling of new and previous tab
+    /// </summary>
+    /// <param name="newTabType">the type of tab to switch to</param>
     public void SwitchTab(TabType newTabType)
     {
         if (AllTabs.ContainsKey(newTabType) && AllTabs.TryGetValue(newTabType, out ITab newTab))
@@ -89,6 +91,9 @@ public class TabHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Used to handle the interaction of entering the previous tab
+    /// </summary>
     public void PreviousTab()
     {
         if (previousTab != null)
@@ -101,32 +106,30 @@ public class TabHandler : MonoBehaviour
         }
     }
 
+    
+    /* Private Methods */
 
     /// <summary>
     /// Method used to instantiate and set dictionary containing possible states
     /// </summary>
-    /// <param name="type">the type of state to instantiate</param>
+    /// <param name="type">the type of tab to instantiate</param>
     private ITab InstantiateAndReturnTab(TabType type)
     {
         switch (type)
         {
             case TabType.PickingHandler:
-                return gameObject.AddComponent<PickingHandler>().Construct(dataHandler);
+                return gameObject.AddComponent<PickingHandler>().Instantiate(dataHandler);
 
             case TabType.ManualOrderPickingHandler:
-                return gameObject.AddComponent<ManualOrderPickHandler>().Construct(dataHandler);
+                return gameObject.AddComponent<ManualOrderPickHandler>().Instantiate(dataHandler);
 
             case TabType.OffloadHandler:
                 //throw new Exception("Appropriate tabHandler for OffloadHandler has not been set in TabHandler.cs");
-
                 return null;
-                break;
 
             case TabType.RestockHandler:
                 //throw new Exception("Appropriate tabHandler for RestockHandler has not been set in TabHandler.cs");
-
                 return null;
-                break;
 
             default:
                 Debug.LogError("TabType: " + type + " does not have an appropriate InstantiateAndReturnTab call");

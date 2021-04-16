@@ -7,13 +7,18 @@ public static class Helper
     /// </summary>
     /// <param name="tag">tag to search for on children</param>
     /// <param name="parent">parent in which to search for child objects from</param>
-    public static GameObject FindChildWithTag(GameObject root, string tag)
+    public static GameObject FindChildWithTag(GameObject root, string tag, out GameObject foundGameObject)
     {
-        if (root == null) return null;
+        foundGameObject = null;
+        if (root == null) return foundGameObject;
 
         foreach (Transform t in root.GetComponentsInChildren<Transform>())
         {
-            if (t.tag == tag) return t.gameObject;
+            if (t.tag == tag)
+            {
+                foundGameObject = t.gameObject;
+                return foundGameObject;
+            }
         }
 
         Debug.LogError("Couldn't find child with tag");
